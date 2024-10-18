@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 from app.models.reserva import Reserva
 from app.ui.ventana_principal import VentanaPrincipal
 
@@ -15,8 +15,6 @@ class BuscarReservaScreen(QWidget):
         self.inicializar_campos()
 
         # Botón para buscar la reserva
-        self.btn_buscar = QPushButton("Buscar Reserva")
-        self.btn_buscar.clicked.connect(self.buscar_reserva)
         self.layout.addWidget(self.btn_buscar)
 
         # Botón para regresar a la pantalla principal
@@ -28,10 +26,21 @@ class BuscarReservaScreen(QWidget):
 
     def inicializar_campos(self):
         """Método para inicializar todos los campos del formulario"""
+
+        # Crear un layout horizontal para el DNI y el botón de búsqueda
+        h_layout = QHBoxLayout()
+
         self.label_dni_pasaporte = QLabel("Ingrese DNI o Pasaporte:")
         self.input_dni_pasaporte = QLineEdit(self)
-        self.layout.addWidget(self.label_dni_pasaporte)
-        self.layout.addWidget(self.input_dni_pasaporte)
+
+        self.btn_buscar = QPushButton("Buscar Reserva")
+        self.btn_buscar.clicked.connect(self.buscar_reserva)
+
+        h_layout.addWidget(self.label_dni_pasaporte)
+        h_layout.addWidget(self.input_dni_pasaporte)
+        h_layout.addWidget(self.btn_buscar)
+
+        self.layout.addLayout(h_layout)
 
         self.label_nombre = QLabel("Nombre:")
         self.input_nombre = QLineEdit(self)

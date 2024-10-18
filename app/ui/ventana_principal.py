@@ -1,10 +1,18 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QMessageBox
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QMessageBox, QLabel
 
 class VentanaPrincipal(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Agencia de Viajes')
         self.setGeometry(100, 100, 400, 300)
+
+        self.fondo_label = QLabel(self)
+        self.fondo_label.setPixmap(QPixmap('app/resources/images/fondo.jpg'))
+        self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
+        self.fondo_label.resize(self.size())
+
+        self.setWindowIcon(QIcon('app/resources/images/icon.ico'))  # Ruta al ícono
 
         # Layout principal
         self.layout = QVBoxLayout()
