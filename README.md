@@ -29,14 +29,19 @@ agencia_viajes/
 │   ├── services/ 
 │   │   └── database.py # Módulo para conexión a la base de datos. 
 │   │   └── queries.py # Módulo para consultas a la base de datos. 
+│   │   └── database_service.py # verificador de conexion. 
 │   ├── models/ 
 │   │   └── reserva.py # Lógica de reservas y acceso a datos. 
 │   ├── ui/ 
-│   │   ├── buscar_reserva.py # Interfaz para buscar reservas. 
-│   │   └── main.py # Pantalla principal de la aplicación.
-│   │   └── reserva_screen.py # Interfaz para llenar formulario.  
+│   │   ├── WindowDestinos.py # Interfaz para buscar reservas. 
+│   │   └── WindowLogin.py # Pantalla principal de la aplicación.
+│   │   └── WindowReserva.py # Interfaz para llenar formulario.  
+│   │   └── WindowPrincipal.py # Interfaz principal.  
+│   │   └── WindowBuscar.py # Interfaz principal.  
 │   └── resources/ 
 │       └── images/ # Imágenes de la aplicación. 
+├── .env  
+├── main.py # app principal. 
 ├── requirements.txt # Dependencias del proyecto. 
 └── README.md # Documentación del proyecto.
 
