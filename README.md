@@ -66,3 +66,5 @@ agencia_viajes/
 
 5. Ejecuta la aplicación:
     python app/ui/main.py
+
+   ![image](https://github.com/user-attachments/assets/9594ee78-78dc-4375-960b-60e1eec56d9f)
