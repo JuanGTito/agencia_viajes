@@ -5,8 +5,8 @@ from app.ui.WindowPrincipal import VentanaPrincipal
 class DestinosScreen(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Destinos Disponibles")
-        self.setGeometry(100, 100, 400, 300)  # Configura la posición y el tamaño de la ventana
+        self.setWindowTitle("Destinos")
+        self.setGeometry(100, 100, 600, 500)  # Configura la posición y el tamaño de la ventana
 
         # Layout principal
         self.layout = QVBoxLayout()
@@ -18,7 +18,7 @@ class DestinosScreen(QWidget):
         # Tabla de destinos
         self.tabla_destinos = QTableWidget()
         self.tabla_destinos.setColumnCount(2)  # Dos columnas: Nombre y Precio
-        self.tabla_destinos.setHorizontalHeaderLabels(["Lugar", "Precio"])  # Encabezados de columnas
+        self.tabla_destinos.setHorizontalHeaderLabels(["Lugar", "Descripcion"])  # Encabezados de columnas
         self.cargar_destinos()  # Cargar destinos desde la base de datos
         
         # Configuración de la tabla
@@ -48,9 +48,9 @@ class DestinosScreen(QWidget):
         self.tabla_destinos.setRowCount(len(destinos))  # Establecer el número de filas según el número de destinos
         
         # Llenar la tabla con los datos de los destinos
-        for row, (id_destino, (nombre, precio)) in enumerate(destinos.items()):
+        for row, (id_destino, (nombre, descripcion)) in enumerate(destinos.items()):
             self.tabla_destinos.setItem(row, 0, QTableWidgetItem(nombre))  # Columna 0: Nombre del lugar
-            self.tabla_destinos.setItem(row, 1, QTableWidgetItem(f"${precio:.2f}"))  # Columna 1: Precio
+            self.tabla_destinos.setItem(row, 1, QTableWidgetItem(descripcion))  # Columna 1: Precio
 
         # Ajustar tamaño de columnas
         self.tabla_destinos.resizeColumnsToContents()  # Ajustar el tamaño de las columnas automáticamente

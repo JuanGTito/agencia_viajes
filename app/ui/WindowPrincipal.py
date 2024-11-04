@@ -32,6 +32,10 @@ class VentanaPrincipal(QWidget):
         self.btn_destinos.clicked.connect(self.show_destinos)
         self.layout.addWidget(self.btn_destinos)
 
+        self.btn_destinos = QPushButton("Reportes")
+        self.btn_destinos.clicked.connect(self.show_destinos)
+        self.layout.addWidget(self.btn_destinos)
+
         self.setLayout(self.layout)
 
     def show_reserva(self):
@@ -53,6 +57,13 @@ class VentanaPrincipal(QWidget):
         from app.ui.WindowDestinos import DestinosScreen  # Asegúrate de que esta clase existe
         self.destinos_screen = DestinosScreen()
         self.destinos_screen.show()
+        self.hide()  # Ocultar la ventana principal
+
+    def show_reportes(self):
+        # Lógica para abrir la pantalla de destinos
+        from app.ui.WindowReportes import ReportesScreen  # Asegúrate de que esta clase existe
+        self.reportes_screen = ReportesScreen()
+        self.reportes_screen.show()
         self.hide()  # Ocultar la ventana principal
 
     def closeEvent(self, event):
