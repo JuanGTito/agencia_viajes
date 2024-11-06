@@ -1,4 +1,4 @@
-from app.services.queries import insertar_turista, insertar_destino, insertar_pago, obtener_reserva
+from app.services.queries import insertar_turista, insertar_reserva, insertar_pago, obtener_reserva
 from app.services.database import crear_conexion
 
 class Reserva:
@@ -7,19 +7,20 @@ class Reserva:
 
     def obtener_destinos(self):
         """Obtiene los destinos disponibles desde la base de datos."""
+
         conn = crear_conexion()
         if conn is None:
             return {}
 
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT id_paquete, id_cat_destino, tipo_paquete, hotel, precio_diario FROM paquete_turistico")  # Cambia esta consulta según tu estructura de tabla
+            cursor.execute("SELECT id_destino, destino, descripcion FROM catalogo_destino")  # Cambia esta consulta según tu estructura de tabla
             destinos = cursor.fetchall()
 
             # Convertir la lista de tuplas a un diccionario
             # ID como clave y una tupla (nombre, precio) como valor
-            return {id_paquete: (id_cat_destino, tipo_paquete, hotel, precio_diario) for id_paquete, id_cat_destino, tipo_paquete, hotel, precio_diario in destinos}
-
+            return {id_destino: (destino, descripcion) for id_destino, destino, descripcion in destinos}
+        
         except Exception as e:
             print(f"Error al obtener destinos: {e}")
             return {}
@@ -28,31 +29,54 @@ class Reserva:
             cursor.close()
             conn.close()
     
-    def cargar_paquetes(self):
-        """Carga los paquetes turísticos basados en el destino seleccionado."""
-        self.input_paquete.clear()
-        destino_id = self.input_destino.currentData()
-        if destino_id is None:
-            return
-
+    def obtener_paquetes_por_destino(self, id_destino_seleccionado):
         conn = crear_conexion()
+        paquetes = []
+
         if conn:
             cursor = conn.cursor()
             try:
-                # Cargar paquetes turísticos que correspondan al destino seleccionado
-                cursor.execute("SELECT id, nombre_paquete, precio FROM paquetes WHERE destino_id = ?", (destino_id,))
+                # Asegúrate de que el id_destino_seleccionado sea un entero válido
+                if not isinstance(id_destino_seleccionado, int):
+                    raise ValueError("El id_destino debe ser un número entero válido")
+
+                print(f"ID de destino seleccionado: {id_destino_seleccionado}")
+
+                # Crear la consulta sin usar parámetros
+                consulta = f"""
+                    SELECT id_paquete, tipo_paquete, precio_diario
+                    FROM paquete_turistico
+                    WHERE id_cat_destino = {id_destino_seleccionado}
+                """
+                cursor.execute(consulta)
+
+                # Recuperar los paquetes
                 paquetes = cursor.fetchall()
-                for id_paquete, nombre_paquete, precio_paquete in paquetes:
-                    self.input_paquete.addItem(nombre_paquete, (id_paquete, precio_paquete))
+                print(f"Paquetes obtenidos: {paquetes}")
+
             except Exception as e:
-                print(f"Error al cargar paquetes turísticos: {e}")
+                print(f"Error al obtener los paquetes turísticos: {e}")
+
             finally:
                 cursor.close()
                 conn.close()
 
+        return paquetes
+    
     def guardar_reserva(self, tipo_documento, num_documento, nombre, apellido, fecha_nacimiento, genero, telefono, email,
-                    nacionalidad, destino, fecha_salida, fecha_regreso, metodo_pago, referencia=None):
+                    nacionalidad, duracion_dias, fecha_salida, monto_total, id_paquete, metodo_pago, referencia=None):
         """Guarda una nueva reserva en la base de datos."""
+
+        print(f"tipo_documento: {tipo_documento}")
+        print(f"num_documento: {num_documento}")
+        print(f"nombre: {nombre}, apellido: {apellido}")
+        print(f"fecha_nacimiento: {fecha_nacimiento}, genero: {genero}")
+        print(f"telefono: {telefono}, email: {email}")
+        print(f"nacionalidad: {nacionalidad}")
+        print(f"duracion_dias: {duracion_dias}, fecha_salida: {fecha_salida}")
+        print(f"monto_total: {monto_total}, id_paquete: {id_paquete}")
+        print(f"metodo_pago: {metodo_pago}, referencia: {referencia}")
+
         conn = crear_conexion()  # Conectar a la base de datos
 
         if conn is None:
@@ -60,40 +84,32 @@ class Reserva:
             return False  # Si no se puede conectar, retornar False
 
         try:
-            cursor = conn.cursor()
+            with conn:  # Usar `with` para asegurar que la conexión se cierre automáticamente
+                with conn.cursor() as cursor:  # Usar `with` para asegurar que el cursor se cierre automáticamente
 
-            # Obtener el ID del destino para la inserción
-            id_destino = next((id for id, (d, _) in self.destinos.items() if d.strip().lower() == destino.strip().lower()), None)
+                    # Insertar en la tabla Turistas
+                    try:
+                        id_turista = insertar_turista(cursor, nombre, apellido, fecha_nacimiento, genero, telefono, email, tipo_documento, num_documento, nacionalidad)
+                    except Exception as e:
+                        print(f"Error al insertar en la tabla Turistas: {e}")
+                        return False  # Deshacer cambios si ocurre un error
 
-            if id_destino is None:
-                raise ValueError(f"El destino '{destino}' no está disponible.")
+                    # Insertar en la tabla Reserva
+                    try:      
+                        id_reserva = insertar_reserva(cursor, id_turista, id_paquete, fecha_salida, duracion_dias)
+                    except Exception as e:
+                        print(f"Error al insertar en la tabla Reserva: {e}")
+                        return False  # Deshacer cambios si ocurre un error
 
-            # Insertar en la tabla Turistas
-            try:
-                id_turista = insertar_turista(cursor, nombre, apellido, fecha_nacimiento, genero, telefono, email, tipo_documento, num_documento, nacionalidad)
-            except Exception as e:
-                print(f"Error al insertar en la tabla Turistas: {e}")
-                conn.rollback()  # Deshacer cambios si ocurre un error
-                return False
+                    # Insertar en la tabla Pagos
+                    try:
+                        insertar_pago(cursor, id_turista, id_reserva, metodo_pago, monto_total, referencia)
+                    except Exception as e:
+                        print(f"Error al insertar en la tabla Pagos: {e}")
+                        return False  # Deshacer cambios si ocurre un error
 
-            # Insertar en la tabla Destinos
-            try:
-                insertar_destino(cursor, id_turista, id_destino, fecha_salida, fecha_regreso)
-            except Exception as e:
-                print(f"Error al insertar en la tabla Destinos: {e}")
-                conn.rollback()  # Deshacer cambios si ocurre un error
-                return False
-
-            # Insertar en la tabla Pagos
-            try:
-                insertar_pago(cursor, id_turista, metodo_pago, self.destinos[id_destino][1], referencia)
-            except Exception as e:
-                print(f"Error al insertar en la tabla Pagos: {e}")
-                conn.rollback()  # Deshacer cambios si ocurre un error
-                return False
-
-            conn.commit()  # Guardar cambios si todo fue exitoso
-            return True  # Retornar True si la reserva fue guardada correctamente
+                conn.commit()  # Guardar cambios si todo fue exitoso
+                return True  # Retornar True si la reserva fue guardada correctamente
 
         except ValueError as ve:
             print(f"Error: {ve}")  # Manejar un error en el destino seleccionado
@@ -101,13 +117,7 @@ class Reserva:
 
         except Exception as e:
             print(f"Error durante la transacción: {e}")  # Manejar cualquier otro error
-            conn.rollback()  # Deshacer los cambios en caso de error
             return False
-
-        finally:
-            cursor.close()  # Cerrar cursor
-            conn.close()  # Cerrar la conexión
-
 
     def obtener_reserva(self, num_documento):
         """Buscar una reserva en la base de datos usando el número de documento."""

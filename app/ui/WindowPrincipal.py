@@ -1,41 +1,65 @@
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QMessageBox, QLabel
+from PyQt5.QtCore import Qt
+import os
 
 class VentanaPrincipal(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Agencia de Viajes')
-        self.setGeometry(100, 100, 400, 300)
+        self.setMinimumSize(600, 800)
 
         self.fondo_label = QLabel(self)
-        self.fondo_label.setPixmap(QPixmap('app/resources/images/fondo.jpg'))
+        self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
         self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
         self.fondo_label.resize(self.size())
 
-        self.setWindowIcon(QIcon('app/resources/images/icon.ico'))  # Ruta al ícono
+        self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
 
-        # Layout principal
         self.layout = QVBoxLayout()
+
+        # Layout horizontal para los botones alineados a la derecha
+        button_layout = QVBoxLayout()
+
+        # Espaciador a la izquierda para empujar los botones a la derecha
+        button_layout.setAlignment(Qt.AlignRight)  # Alineación a la derecha
 
         # Botón para reservar
         self.btn_reservar = QPushButton("Reservar")
+        self.btn_reservar.setStyleSheet("font-size: 16px;")
+        self.btn_reservar.setFixedWidth(200)
+        self.btn_reservar.setFixedHeight(45)
         self.btn_reservar.clicked.connect(self.show_reserva)
-        self.layout.addWidget(self.btn_reservar)
+        button_layout.addWidget(self.btn_reservar)
 
         # Botón para buscar
         self.btn_buscar = QPushButton("Buscar")
+        self.btn_buscar.setStyleSheet("font-size: 16px;")
+        self.btn_buscar.setFixedWidth(200)
+        self.btn_buscar.setFixedHeight(45)
         self.btn_buscar.clicked.connect(self.show_buscar)
-        self.layout.addWidget(self.btn_buscar)
+        button_layout.addWidget(self.btn_buscar)
 
         # Botón para destinos
         self.btn_destinos = QPushButton("Destinos")
+        self.btn_destinos.setStyleSheet("font-size: 16px;")
+        self.btn_destinos.setFixedWidth(200)
+        self.btn_destinos.setFixedHeight(45)
         self.btn_destinos.clicked.connect(self.show_destinos)
-        self.layout.addWidget(self.btn_destinos)
+        button_layout.addWidget(self.btn_destinos)
 
-        self.btn_destinos = QPushButton("Reportes")
-        self.btn_destinos.clicked.connect(self.show_destinos)
-        self.layout.addWidget(self.btn_destinos)
+        # Botón para reportes
+        self.btn_reportes = QPushButton("Reportes")
+        self.btn_reportes.setStyleSheet("font-size: 16px;")
+        self.btn_reportes.setFixedWidth(200)
+        self.btn_reportes.setFixedHeight(45)
+        self.btn_reportes.clicked.connect(self.show_reportes)
+        button_layout.addWidget(self.btn_reportes)
 
+        # Agregar el layout de botones al layout principal
+        self.layout.addLayout(button_layout)
+
+        # Establecer el layout principal
         self.setLayout(self.layout)
 
     def show_reserva(self):
@@ -61,8 +85,8 @@ class VentanaPrincipal(QWidget):
 
     def show_reportes(self):
         # Lógica para abrir la pantalla de destinos
-        from app.ui.WindowReportes import ReportesScreen  # Asegúrate de que esta clase existe
-        self.reportes_screen = ReportesScreen()
+        from app.ui.WindowReportes import ReportePDFScreen  # Asegúrate de que esta clase existe
+        self.reportes_screen = ReportePDFScreen()
         self.reportes_screen.show()
         self.hide()  # Ocultar la ventana principal
 
