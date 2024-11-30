@@ -108,7 +108,7 @@ class ReservaScreen(QWidget):
         self.btn_siguiente.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(1))
         layout.addWidget(self.btn_siguiente)
 
-        self.btn_regresar = QPushButton("Regresar a la Pantalla Principal")
+        self.btn_regresar = QPushButton("Regresar")
         self.btn_regresar.clicked.connect(self.regresar_a_principal)  # Conectar a la función de regreso
         layout.addWidget(self.btn_regresar)
 

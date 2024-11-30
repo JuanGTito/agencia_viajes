@@ -10,20 +10,23 @@ class VentanaLogin(QDialog):
         super().__init__()
 
         self.setWindowTitle('Login')
-        self.setMinimumSize(500, 700)
-
+        self.setFixedSize(500, 700)
         self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
-
+        
+        # Fondo de la ventana
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
         self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
         self.fondo_label.resize(self.size())
 
+        # Fuentes
         fontNegrita = QFont("Arial", 17, QFont.Bold)
 
+        # Logo
         self.label_logo = QLabel()
         self.cargar_logo()
 
+        # Etiquetas y entradas
         self.label_usuario = QLabel("Usuario:")
         self.label_usuario.setFont(fontNegrita)
         self.label_usuario.setAlignment(Qt.AlignCenter)
@@ -41,28 +44,43 @@ class VentanaLogin(QDialog):
         self.input_contrasena.setFixedWidth(200)
         self.input_contrasena.setFixedHeight(30)
 
+        # Botón de login
         self.boton_login = QPushButton("Iniciar Sesión")
         self.boton_login.setFont(fontNegrita)
         self.boton_login.setFixedWidth(180)
         self.boton_login.setFixedHeight(35)
         self.boton_login.clicked.connect(self.verificar_login)
 
+        # Layout de los botones
         layout_boton = QHBoxLayout()
         layout_boton.setAlignment(Qt.AlignCenter)
         layout_boton.addWidget(self.boton_login)
 
-        layout_principal = QVBoxLayout()
+        # Layout principal
+        layout_principal = QVBoxLayout(self)
         layout_principal.setAlignment(Qt.AlignCenter)
 
-        layout_principal.addWidget(self.label_logo)
-
-        layout_principal.addWidget(self.label_usuario)
-        layout_principal.addWidget(self.input_usuario)
-        layout_principal.addWidget(self.label_contrasena)
-        layout_principal.addWidget(self.input_contrasena)
-
+        # Añadir los widgets al layout
+        layout_principal.addWidget(self.label_logo, alignment=Qt.AlignCenter)
+        layout_principal.addWidget(self.label_usuario, alignment=Qt.AlignCenter)
+        layout_principal.addWidget(self.input_usuario, alignment=Qt.AlignCenter)
+        layout_principal.addWidget(self.label_contrasena, alignment=Qt.AlignCenter)
+        layout_principal.addWidget(self.input_contrasena, alignment=Qt.AlignCenter)
         layout_principal.addLayout(layout_boton)
 
+        # Añadir un espaciador para centrar el contenido verticalmente
+        layout_principal.addStretch(1)
+
+        # Footer (pie de página)
+        footer_layout = QHBoxLayout()
+        self.footer_label = QLabel('© 2024 Agencia de Viajes - Todos los derechos reservados.', self)
+        self.footer_label.setStyleSheet("font-size: 12px; color: gray;")
+        footer_layout.addWidget(self.footer_label, alignment=Qt.AlignCenter)  # Centrado del pie de página
+
+        # Agregar el footer al layout principal
+        layout_principal.addLayout(footer_layout)
+
+        # Establecer el layout principal
         self.setLayout(layout_principal)
 
     def cargar_logo(self):

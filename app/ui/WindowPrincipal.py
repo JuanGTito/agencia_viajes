@@ -1,14 +1,17 @@
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QMessageBox, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QMessageBox, QLabel, QHBoxLayout
 from PyQt5.QtCore import Qt
 import os
 
 class VentanaPrincipal(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Agencia de Viajes')
-        self.setMinimumSize(600, 800)
 
+        # Configurar la ventana
+        self.setWindowTitle('Agencia de Viajes')
+        self.setFixedSize(600, 800)  # Fijar el tamaño de la ventana para que no sea redimensionable
+
+        # Fondo de la ventana
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
         self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
@@ -16,51 +19,83 @@ class VentanaPrincipal(QWidget):
 
         self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
 
+        # Layout principal
         self.layout = QVBoxLayout()
 
-        # Layout horizontal para los botones alineados a la derecha
+        # Layout para el encabezado (Logo y nombre del sistema)
+        top_layout = QVBoxLayout()
+
+        # Agregar el logo
+        self.logo_label = QLabel(self)
+        logo_pixmap = QPixmap(os.getenv('IMG_LOGO'))  # Cargar logo desde una ruta de imagen
+        self.logo_label.setPixmap(logo_pixmap.scaled(100, 100, Qt.KeepAspectRatio))  # Escalar el logo
+        top_layout.addWidget(self.logo_label, alignment=Qt.AlignCenter)  # Centrado del logo
+
+        # Agregar el nombre del sistema
+        self.nombre_label = QLabel('Agencia de Viajes', self)
+        self.nombre_label.setStyleSheet("font-size: 24px; font-weight: bold;")
+        top_layout.addWidget(self.nombre_label, alignment=Qt.AlignCenter)  # Centrado del nombre
+
+        # Agregar el layout del encabezado al layout principal
+        self.layout.addLayout(top_layout)
+
+        # Espaciadores para centrar los botones en la ventana
+        self.layout.addStretch(1)  # Empujar los botones hacia el centro
+
+        # Layout para los botones (centrados)
         button_layout = QVBoxLayout()
+        button_layout.setAlignment(Qt.AlignCenter)  # Alineación de los botones al centro
 
-        # Espaciador a la izquierda para empujar los botones a la derecha
-        button_layout.setAlignment(Qt.AlignRight)  # Alineación a la derecha
-
-        # Botón para reservar
-        self.btn_reservar = QPushButton("Reservar")
-        self.btn_reservar.setStyleSheet("font-size: 16px;")
-        self.btn_reservar.setFixedWidth(200)
-        self.btn_reservar.setFixedHeight(45)
-        self.btn_reservar.clicked.connect(self.show_reserva)
-        button_layout.addWidget(self.btn_reservar)
-
-        # Botón para buscar
-        self.btn_buscar = QPushButton("Buscar")
-        self.btn_buscar.setStyleSheet("font-size: 16px;")
-        self.btn_buscar.setFixedWidth(200)
-        self.btn_buscar.setFixedHeight(45)
-        self.btn_buscar.clicked.connect(self.show_buscar)
-        button_layout.addWidget(self.btn_buscar)
-
-        # Botón para destinos
-        self.btn_destinos = QPushButton("Destinos")
-        self.btn_destinos.setStyleSheet("font-size: 16px;")
-        self.btn_destinos.setFixedWidth(200)
-        self.btn_destinos.setFixedHeight(45)
-        self.btn_destinos.clicked.connect(self.show_destinos)
-        button_layout.addWidget(self.btn_destinos)
-
-        # Botón para reportes
-        self.btn_reportes = QPushButton("Reportes")
-        self.btn_reportes.setStyleSheet("font-size: 16px;")
-        self.btn_reportes.setFixedWidth(200)
-        self.btn_reportes.setFixedHeight(45)
-        self.btn_reportes.clicked.connect(self.show_reportes)
-        button_layout.addWidget(self.btn_reportes)
+        self.agregar_boton_con_imagen(button_layout, "Reservar", os.getenv('IMG_RESERVAR'), self.show_reserva)
+        self.agregar_boton_con_imagen(button_layout, "Buscar", os.getenv('IMG_BUSCAR'), self.show_buscar)
+        self.agregar_boton_con_imagen(button_layout, "Destinos", os.getenv('IMG_DESTINO'), self.show_destinos)
+        self.agregar_boton_con_imagen(button_layout, "Reportes", os.getenv('IMG_REPORTE'), self.show_reportes)
 
         # Agregar el layout de botones al layout principal
         self.layout.addLayout(button_layout)
 
+        self.layout.addStretch(3)  # Empujar más abajo para centrar verticalmente los botones
+
+        # Footer (pie de página)
+        footer_layout = QHBoxLayout()
+        self.footer_label = QLabel('© 2024 Agencia de Viajes - Todos los derechos reservados.', self)
+        self.footer_label.setStyleSheet("font-size: 12px; color: gray;")
+        footer_layout.addWidget(self.footer_label, alignment=Qt.AlignCenter)  # Centrado del pie de página
+
+        # Agregar el footer al layout principal
+        self.layout.addLayout(footer_layout)
+
         # Establecer el layout principal
         self.setLayout(self.layout)
+
+    def agregar_boton_con_imagen(self, layout, texto, imagen, funcion):
+        # Crear un QHBoxLayout para cada botón
+        boton_layout = QHBoxLayout()
+
+        # Crear el QLabel para la imagen
+        imagen_label = QLabel(self)
+        pixmap = QPixmap(imagen)
+
+        if not pixmap.isNull():  # Verificar si la imagen se cargó correctamente
+            imagen_label.setPixmap(pixmap.scaled(30, 30, Qt.KeepAspectRatio))  # Ajustar tamaño de la imagen
+        else:
+            print(f"Error al cargar la imagen: {imagen}")
+
+        imagen_label.setFixedSize(30, 30)  # Tamaño de la imagen
+
+        # Crear el botón
+        boton = QPushButton(texto)
+        boton.setStyleSheet("font-size: 16px;")
+        boton.setFixedWidth(200)
+        boton.setFixedHeight(45)
+        boton.clicked.connect(funcion)
+
+        # Agregar la imagen y el botón al layout horizontal
+        boton_layout.addWidget(imagen_label)  # Imagen a la izquierda
+        boton_layout.addWidget(boton)  # Botón a la derecha
+
+        # Agregar el layout horizontal al layout de botones
+        layout.addLayout(boton_layout)
 
     def show_reserva(self):
         # Lógica para abrir la pantalla de reserva

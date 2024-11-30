@@ -29,7 +29,7 @@ class DestinosScreen(QWidget):
         
         self.layout.addWidget(self.tabla_destinos)
 
-        self.btn_regresar = QPushButton("Regresar a la Pantalla Principal")
+        self.btn_regresar = QPushButton("Regresar")
         self.btn_regresar.clicked.connect(self.regresar_a_principal)  # Conectar a la función de regreso
         self.layout.addWidget(self.btn_regresar)
 
