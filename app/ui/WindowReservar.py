@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox, QDateEdit, QStackedWidget, QDateEdit, QSpinBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox, QDateEdit, QStackedWidget, QDateEdit, QSpinBox
 from PyQt5.QtGui import QPixmap, QFont, QIcon
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, Qt
 import os
 from app.models.reserva import Reserva
 from app.ui.WindowPrincipal import VentanaPrincipal
@@ -44,73 +44,89 @@ class ReservaScreen(QWidget):
         self.label_tipo_doc.setFont(self.fontNegrita)
         self.input_tipo_doc = QComboBox()
         self.input_tipo_doc.addItems(["DNI", "Pasaporte"])
-        layout.addWidget(self.label_tipo_doc)
-        layout.addWidget(self.input_tipo_doc)
+        layout.addWidget(self.label_tipo_doc, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_tipo_doc, alignment=Qt.AlignLeft)
 
         self.label_num_doc = QLabel("Número de Documento:")
         self.label_num_doc.setFont(self.fontNegrita)
         self.input_num_doc = QLineEdit()
         self.input_num_doc.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_num_doc.setFixedHeight(30)
-        layout.addWidget(self.label_num_doc)
-        layout.addWidget(self.input_num_doc)
+        layout.addWidget(self.label_num_doc, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_num_doc, alignment=Qt.AlignLeft)
 
         self.label_nombre = QLabel("Nombre Completo:")
         self.label_nombre.setFont(self.fontNegrita)
         self.input_nombre = QLineEdit()
         self.input_nombre.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_nombre.setFixedHeight(30)
-        layout.addWidget(self.label_nombre)
-        layout.addWidget(self.input_nombre)
+        layout.addWidget(self.label_nombre, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_nombre, alignment=Qt.AlignLeft)
 
         self.label_apellido = QLabel("Apellido:")
         self.label_apellido.setFont(self.fontNegrita)
         self.input_apellido = QLineEdit()
         self.input_apellido.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_apellido.setFixedHeight(30)
-        layout.addWidget(self.label_apellido)
-        layout.addWidget(self.input_apellido)
+        layout.addWidget(self.label_apellido, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_apellido, alignment=Qt.AlignLeft)
 
         self.label_fecha_nacimiento = QLabel("Fecha de Nacimiento:")
         self.label_fecha_nacimiento.setFont(self.fontNegrita)
         self.input_fecha_nacimiento = QDateEdit()
         self.input_fecha_nacimiento.setCalendarPopup(True)
-        layout.addWidget(self.label_fecha_nacimiento)
-        layout.addWidget(self.input_fecha_nacimiento)
+        self.input_fecha_nacimiento.setFixedHeight(30)
+        layout.addWidget(self.label_fecha_nacimiento, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_fecha_nacimiento, alignment=Qt.AlignLeft)
 
         self.label_genero = QLabel("Género:")
         self.label_genero.setFont(self.fontNegrita)
         self.input_genero = QComboBox()
         self.input_genero.addItems(["Masculino", "Femenino"])
-        layout.addWidget(self.label_genero)
-        layout.addWidget(self.input_genero)
+        layout.addWidget(self.label_genero, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_genero, alignment=Qt.AlignLeft)
 
         self.label_nacionalidad = QLabel("Nacionalidad:")
         self.label_nacionalidad.setFont(self.fontNegrita)
         self.input_nacionalidad = QLineEdit()
-        layout.addWidget(self.label_nacionalidad)
-        layout.addWidget(self.input_nacionalidad)
+        self.input_nacionalidad.setFixedHeight(30)
+        layout.addWidget(self.label_nacionalidad, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_nacionalidad, alignment=Qt.AlignLeft)
 
         self.label_telefono = QLabel("Número de Teléfono:")
         self.label_telefono.setFont(self.fontNegrita)
         self.input_telefono = QLineEdit()
-        layout.addWidget(self.label_telefono)
-        layout.addWidget(self.input_telefono)
+        self.input_telefono.setFixedHeight(30)
+        layout.addWidget(self.label_telefono, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_telefono, alignment=Qt.AlignLeft)
 
         self.label_email = QLabel("Correo Electrónico:")
         self.label_email.setFont(self.fontNegrita)
         self.input_email = QLineEdit()
-        layout.addWidget(self.label_email)
-        layout.addWidget(self.input_email)
+        self.input_email.setFixedHeight(30)
+        layout.addWidget(self.label_email, alignment=Qt.AlignLeft)
+        layout.addWidget(self.input_email, alignment=Qt.AlignLeft)
 
         # Botón para pasar a la siguiente sección
         self.btn_siguiente = QPushButton("Siguiente")
+        self.btn_siguiente.setFont(self.fontNegrita)
+        self.btn_siguiente.setFixedSize(100, 35) 
         self.btn_siguiente.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(1))
-        layout.addWidget(self.btn_siguiente)
+        
 
         self.btn_regresar = QPushButton("Regresar")
-        self.btn_regresar.clicked.connect(self.regresar_a_principal)  # Conectar a la función de regreso
-        layout.addWidget(self.btn_regresar)
+        self.btn_regresar.setFont(self.fontNegrita)
+        self.btn_regresar.setFixedSize(100, 35)
+        self.btn_regresar.clicked.connect(self.regresar_a_principal)
+
+        botones_layout = QHBoxLayout()
+        botones_layout.setSpacing(20)  # Espacio entre los botones
+        botones_layout.addWidget(self.btn_regresar)
+        botones_layout.addWidget(self.btn_siguiente)
+
+        botones_layout.setAlignment(Qt.AlignCenter)
+
+        layout.addLayout(botones_layout)
 
         # Crear widget y agregar layout
         personal_widget = QWidget()
@@ -119,64 +135,94 @@ class ReservaScreen(QWidget):
 
     def crear_detalle_destino(self):
         layout = QVBoxLayout()
-    
+
+        # Obtener destinos y crear el combo
         destinos = self.reserva.obtener_destinos()
-    
+
         self.label_destino = QLabel("Destino:")
         self.label_destino.setFont(self.fontNegrita)
         self.input_destino = QComboBox()
-    
+
+        # Agregar destinos al combo
         for id_destino, (destino, descripcion) in destinos.items():
             self.input_destino.addItem(f"{destino} - Descripción: {descripcion}", id_destino)
-    
+
         self.input_destino.currentIndexChanged.connect(self.actualizar_campo_con_id_destino)
-    
+        self.input_destino.setFixedHeight(30)
+
         layout.addWidget(self.label_destino)
-        layout.addWidget(self.input_destino)
-    
+        layout.addWidget(self.input_destino, alignment=Qt.AlignLeft)
+
+        # Tipo de Paquete
         self.label_paquete = QLabel("Tipo de Paquete:")
         self.label_paquete.setFont(self.fontNegrita)
         self.input_paquete = QComboBox()
+        self.input_paquete.setFixedHeight(30)
         layout.addWidget(self.label_paquete)
-        layout.addWidget(self.input_paquete)
+        layout.addWidget(self.input_paquete, alignment=Qt.AlignLeft)
 
+        # Fecha de Salida
         self.label_fecha_salida = QLabel("Fecha de Salida:")
         self.label_fecha_salida.setFont(self.fontNegrita)
         self.input_fecha_salida = QDateEdit()
         self.input_fecha_salida.setMinimumDate(QDate.currentDate())
+        self.input_fecha_salida.setFixedHeight(30)
         layout.addWidget(self.label_fecha_salida)
-        layout.addWidget(self.input_fecha_salida)
+        layout.addWidget(self.input_fecha_salida, alignment=Qt.AlignLeft)
 
-        # Duración (cambiar a QSpinBox)
+        # Duración
         self.label_duracion = QLabel("Duración (días):")
         self.label_duracion.setFont(self.fontNegrita)
         self.input_duracion = QSpinBox()
         self.input_duracion.setMinimum(1)  # Mínimo 1 día
         self.input_duracion.setMaximum(365)  # Máximo 365 días (un año)
         self.input_duracion.textChanged.connect(self.calcular_precio_total)
+        self.input_duracion.setFixedHeight(30)
         layout.addWidget(self.label_duracion)
-        layout.addWidget(self.input_duracion)
+        layout.addWidget(self.input_duracion, alignment=Qt.AlignLeft)
 
+        # Fecha de Regreso
         self.label_fecha_regreso = QLabel("Fecha Llegada:")
         self.label_fecha_regreso.setFont(self.fontNegrita)
         self.input_fecha_regreso = QDateEdit()
         self.input_fecha_regreso.setReadOnly(True)  # Solo lectura
+        self.input_fecha_regreso.setFixedHeight(30)
         layout.addWidget(self.label_fecha_regreso)
-        layout.addWidget(self.input_fecha_regreso)
+        layout.addWidget(self.input_fecha_regreso, alignment=Qt.AlignLeft)
 
+        # Conexiones para calcular la fecha de regreso
         self.input_duracion.valueChanged.connect(self.actualizar_fecha_llegada)
-        self.input_fecha_salida.dateChanged.connect(self.actualizar_fecha_llegada)  # Conectar a la señal dateChanged de fecha de salida
-    
-        self.btn_regresar = QPushButton("Regresar")
-        self.btn_regresar.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(0))
-        layout.addWidget(self.btn_regresar)
-    
+        self.input_fecha_salida.dateChanged.connect(self.actualizar_fecha_llegada)
+
+        # Botón "Siguiente"
         self.btn_siguiente_destino = QPushButton("Siguiente")
+        self.btn_siguiente_destino.setFont(self.fontNegrita)
+        self.btn_siguiente_destino.setFixedSize(100, 35) 
         self.btn_siguiente_destino.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(2))
-        layout.addWidget(self.btn_siguiente_destino)
-    
+
+        # Botón "Regresar"
+        self.btn_regresar = QPushButton("Regresar")
+        self.btn_regresar.setFont(self.fontNegrita)
+        self.btn_regresar.setFixedSize(100, 35)
+        self.btn_regresar.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(0))
+
+        # Layout para los botones
+        botones_layout = QHBoxLayout()
+        botones_layout.setSpacing(20)  # Espacio entre los botones
+        botones_layout.addWidget(self.btn_regresar)
+        botones_layout.addWidget(self.btn_siguiente_destino)
+
+        # Centrar los botones
+        botones_layout.setAlignment(Qt.AlignCenter)
+
+        # Agregar los botones al layout principal
+        layout.addLayout(botones_layout)
+
+        # Crear el widget con el layout
         destino_widget = QWidget()
         destino_widget.setLayout(layout)
+
+        # Agregar el widget a la pila (stacked_widget)
         self.stacked_widget.addWidget(destino_widget)
 
     def actualizar_fecha_llegada(self):
@@ -272,40 +318,61 @@ class ReservaScreen(QWidget):
     def crear_reserva_pago(self):
         """Tercera sección: Reserva y Pago"""
         layout = QVBoxLayout()
-
+    
+        # Total a pagar
         self.label_total_a_pagar = QLabel("Total a Pagar:")
         self.label_total_a_pagar.setFont(self.fontNegrita)
         self.input_total_a_pagar = QLineEdit()
         self.input_total_a_pagar.setReadOnly(True)
+        self.input_total_a_pagar.setFixedHeight(30)
         layout.addWidget(self.label_total_a_pagar)
-        layout.addWidget(self.input_total_a_pagar)
-
+        layout.addWidget(self.input_total_a_pagar, alignment=Qt.AlignLeft)
+    
+        # Método de pago
         self.label_metodo_pago = QLabel("Método de Pago:")
         self.label_metodo_pago.setFont(self.fontNegrita)
         self.input_metodo_pago = QComboBox()
         self.input_metodo_pago.addItems(["Transferencia", "Efectivo"])
+        self.input_metodo_pago.setFixedHeight(30)
         layout.addWidget(self.label_metodo_pago)
-        layout.addWidget(self.input_metodo_pago)
-
+        layout.addWidget(self.input_metodo_pago, alignment=Qt.AlignLeft)
+    
+        # Número de referencia
         self.label_referencia = QLabel("Número de Referencia (si aplica):")
         self.label_referencia.setFont(self.fontNegrita)
         self.input_referencia = QLineEdit()
+        self.input_referencia.setFixedHeight(30)
         layout.addWidget(self.label_referencia)
-        layout.addWidget(self.input_referencia)
-
-        # Botones para regresar y enviar
+        layout.addWidget(self.input_referencia, alignment=Qt.AlignLeft)
+    
+        # Botones
+        botones_layout = QHBoxLayout()
+        botones_layout.setSpacing(20)  # Espacio entre los botones
+    
+        # Botón "Regresar"
         self.btn_regresar = QPushButton("Regresar")
+        self.btn_regresar.setFont(self.fontNegrita)
+        self.btn_regresar.setFixedSize(100, 35)
         self.btn_regresar.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(1))
-        layout.addWidget(self.btn_regresar)
-
+        botones_layout.addWidget(self.btn_regresar)
+    
+        # Botón "Enviar Reserva"
         self.btn_enviar = QPushButton("Enviar Reserva")
+        self.btn_enviar.setFont(self.fontNegrita)
+        self.btn_enviar.setFixedSize(150, 35)
         self.btn_enviar.clicked.connect(self.enviar_reserva)
         self.btn_enviar.clicked.connect(self.regresar_a_principal)
-        layout.addWidget(self.btn_enviar)
-
-        # Crear widget y agregar layout
+        botones_layout.addWidget(self.btn_enviar)
+    
+        # Centrar los botones
+        botones_layout.setAlignment(Qt.AlignCenter)
+        layout.addLayout(botones_layout)
+    
+        # Crear el widget con el layout
         reserva_widget = QWidget()
         reserva_widget.setLayout(layout)
+    
+        # Agregar el widget a la pila (stacked_widget)
         self.stacked_widget.addWidget(reserva_widget)
 
     def validar_fechas(self):

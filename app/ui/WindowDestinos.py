@@ -1,12 +1,23 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QMessageBox
+from PyQt5.QtGui import QPixmap, QFont, QIcon
 from app.models.reserva import Reserva 
 from app.ui.WindowPrincipal import VentanaPrincipal
+import os
 
 class DestinosScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Destinos")
-        self.setGeometry(100, 100, 600, 500)  # Configura la posición y el tamaño de la ventana
+        self.setMinimumSize(600, 800)
+
+        self.fondo_label = QLabel(self)
+        self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
+        self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
+        self.fondo_label.resize(self.size())
+
+        self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
+
+        self.fontNegrita = QFont("Arial", 14, QFont.Bold)
 
         # Layout principal
         self.layout = QVBoxLayout()

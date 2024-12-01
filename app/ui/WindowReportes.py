@@ -1,16 +1,27 @@
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QWidget, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QLabel, QWidget, QMessageBox, QInputDialog
+from PyQt5.QtGui import QPixmap, QFont, QIcon
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from datetime import datetime
 import pandas as pd
 from app.ui.WindowPrincipal import VentanaPrincipal
 from app.services.database import crear_conexion
+import os
 
 class ReportePDFScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Generar Reporte PDF')
-        self.setGeometry(100, 100, 400, 300)
+        self.setMinimumSize(400, 600)
+
+        self.fondo_label = QLabel(self)
+        self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
+        self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
+        self.fondo_label.resize(self.size())
+
+        self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
+
+        self.fontNegrita = QFont("Arial", 14, QFont.Bold)
 
         # Layout para los botones
         layout = QVBoxLayout()

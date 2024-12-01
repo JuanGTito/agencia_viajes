@@ -1,12 +1,24 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5.QtGui import QPixmap, QFont, QIcon
+from PyQt5.QtCore import QDate, Qt
 from app.models.reserva import Reserva
 from app.ui.WindowPrincipal import VentanaPrincipal
+import os
 
 class BuscarReservaScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Buscar Reserva')
-        self.setGeometry(100, 100, 400, 300)
+        self.setMinimumSize(600, 800)
+
+        self.fondo_label = QLabel(self)
+        self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
+        self.fondo_label.setScaledContents(True)  # Escalar la imagen para ajustarse al QLabel
+        self.fondo_label.resize(self.size())
+
+        self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
+
+        self.fontNegrita = QFont("Arial", 14, QFont.Bold)
 
         self.layout = QVBoxLayout()
         self.reserva = Reserva()  # Crear una instancia de la clase Reserva
@@ -26,87 +38,116 @@ class BuscarReservaScreen(QWidget):
 
     def inicializar_campos(self):
         """Método para inicializar todos los campos del formulario"""
+        
+        self.layout = QVBoxLayout()
 
-        # Crear un layout horizontal para el DNI y el botón de búsqueda
-        h_layout = QHBoxLayout()
+        # Crear layout horizontal para el DNI o Pasaporte y el botón de búsqueda
+        h_layout_dni = QHBoxLayout()
 
-        self.label_dni_pasaporte = QLabel("Ingrese DNI o Pasaporte:")
+        # Campo de entrada para DNI o Pasaporte con placeholder
         self.input_dni_pasaporte = QLineEdit(self)
+        self.input_dni_pasaporte.setFixedHeight(30)
+        self.input_dni_pasaporte.setPlaceholderText("Ingrese DNI o Pasaporte")  # Placeholder text
 
+        # Crear el botón de búsqueda y agregarlo a la derecha del campo
         self.btn_buscar = QPushButton("Buscar Reserva")
+        self.btn_buscar.setFont(self.fontNegrita)
         self.btn_buscar.clicked.connect(self.buscar_reserva)
 
-        h_layout.addWidget(self.label_dni_pasaporte)
-        h_layout.addWidget(self.input_dni_pasaporte)
-        h_layout.addWidget(self.btn_buscar)
+        # Añadir el campo de entrada y el botón al layout horizontal
+        h_layout_dni.addWidget(self.input_dni_pasaporte)
+        h_layout_dni.addWidget(self.btn_buscar)
 
-        self.layout.addLayout(h_layout)
+        # Añadir el layout horizontal de DNI y el botón al layout principal
+        self.layout.addLayout(h_layout_dni)
 
         self.label_nombre = QLabel("Nombre:")
+        self.label_nombre.setFont(self.fontNegrita)
         self.input_nombre = QLineEdit(self)
-        self.input_nombre.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_nombre)
-        self.layout.addWidget(self.input_nombre)
+        self.input_nombre.setReadOnly(True)
+        self.input_nombre.setFixedHeight(30)
+        self.layout.addWidget(self.label_nombre, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_nombre, alignment=Qt.AlignLeft)
 
         self.label_telefono = QLabel("Teléfono:")
+        self.label_telefono.setFont(self.fontNegrita)
         self.input_telefono = QLineEdit(self)
         self.input_telefono.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_telefono)
-        self.layout.addWidget(self.input_telefono)
+        self.input_telefono.setFixedHeight(30)
+        self.layout.addWidget(self.label_telefono, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_telefono, alignment=Qt.AlignLeft)
 
         self.label_destino = QLabel("Destino:")
+        self.label_destino.setFont(self.fontNegrita)
         self.input_destino = QLineEdit(self)
         self.input_destino.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_destino)
-        self.layout.addWidget(self.input_destino)
+        self.input_destino.setFixedHeight(30)
+        self.layout.addWidget(self.label_destino, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_destino, alignment=Qt.AlignLeft)
 
         self.label_nacionalidad = QLabel("Nacionalidad:")
+        self.label_nacionalidad.setFont(self.fontNegrita)
         self.input_nacionalidad = QLineEdit(self)
         self.input_nacionalidad.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_nacionalidad)
-        self.layout.addWidget(self.input_nacionalidad)
+        self.input_nacionalidad.setFixedHeight(30)
+        self.layout.addWidget(self.label_nacionalidad, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_nacionalidad, alignment=Qt.AlignLeft)
 
         self.label_email = QLabel("Email:")
+        self.label_email.setFont(self.fontNegrita)
         self.input_email = QLineEdit(self)
         self.input_email.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_email)
-        self.layout.addWidget(self.input_email)
+        self.input_email.setFixedHeight(30)
+        self.layout.addWidget(self.label_email, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_email, alignment=Qt.AlignLeft)
 
         self.label_paquete = QLabel("Tipo de Paquete:")
+        self.label_paquete.setFont(self.fontNegrita)
         self.input_paquete = QLineEdit(self)
         self.input_paquete.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_paquete)
-        self.layout.addWidget(self.input_paquete)
+        self.input_paquete.setFixedHeight(30)
+        self.layout.addWidget(self.label_paquete, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_paquete, alignment=Qt.AlignLeft)
 
         self.label_monto_total = QLabel("Monto Total:")
+        self.label_monto_total.setFont(self.fontNegrita)
         self.input_monto_total = QLineEdit(self)
         self.input_monto_total.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_monto_total)
-        self.layout.addWidget(self.input_monto_total)
+        self.input_monto_total.setFixedHeight(30)
+        self.layout.addWidget(self.label_monto_total, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_monto_total, alignment=Qt.AlignLeft)
 
         self.label_fecha_reserva = QLabel("Fecha de Reserva:")
+        self.label_fecha_reserva.setFont(self.fontNegrita)
         self.input_fecha_reserva = QLineEdit(self)
         self.input_fecha_reserva.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_fecha_reserva)
-        self.layout.addWidget(self.input_fecha_reserva)
+        self.input_fecha_reserva.setFixedHeight(30)
+        self.layout.addWidget(self.label_fecha_reserva, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_fecha_reserva, alignment=Qt.AlignLeft)
 
         self.label_fecha_salida = QLabel("Fecha de Salida:")
+        self.label_fecha_salida.setFont(self.fontNegrita)
         self.input_fecha_salida = QLineEdit(self)
         self.input_fecha_salida.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_fecha_salida)
-        self.layout.addWidget(self.input_fecha_salida)
+        self.input_fecha_salida.setFixedHeight(30)
+        self.layout.addWidget(self.label_fecha_salida, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_fecha_salida, alignment=Qt.AlignLeft)
 
         self.label_duracion_dias = QLabel("Duración (Días):")
+        self.label_duracion_dias.setFont(self.fontNegrita)
         self.input_duracion_dias = QLineEdit(self)
         self.input_duracion_dias.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_duracion_dias)
-        self.layout.addWidget(self.input_duracion_dias)
+        self.input_duracion_dias.setFixedHeight(30)
+        self.layout.addWidget(self.label_duracion_dias, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_duracion_dias, alignment=Qt.AlignLeft)
 
         self.label_metodo_pago = QLabel("Método de Pago:")
+        self.label_metodo_pago.setFont(self.fontNegrita)
         self.input_metodo_pago = QLineEdit(self)
         self.input_metodo_pago.setReadOnly(True)  # Solo lectura
-        self.layout.addWidget(self.label_metodo_pago)
-        self.layout.addWidget(self.input_metodo_pago)
+        self.input_metodo_pago.setFixedHeight(30)
+        self.layout.addWidget(self.label_metodo_pago, alignment=Qt.AlignLeft)
+        self.layout.addWidget(self.input_metodo_pago, alignment=Qt.AlignLeft)
 
     def buscar_reserva(self):
         """Buscar reserva en la base de datos"""
