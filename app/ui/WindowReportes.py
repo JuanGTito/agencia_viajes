@@ -1,18 +1,20 @@
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QLabel, QWidget, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QLabel, QWidget, QMessageBox, QInputDialog, QHBoxLayout
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from datetime import datetime
+from PyQt5.QtCore import Qt
 import pandas as pd
 from app.ui.WindowPrincipal import VentanaPrincipal
 from app.services.database import crear_conexion
 import os
+from pathlib import Path
 
 class ReportePDFScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Generar Reporte PDF')
-        self.setMinimumSize(400, 600)
+        self.setMinimumSize(300, 400)
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
@@ -24,19 +26,32 @@ class ReportePDFScreen(QWidget):
         self.fontNegrita = QFont("Arial", 14, QFont.Bold)
 
         # Layout para los botones
-        layout = QVBoxLayout()
+        self.layout_principal = QVBoxLayout()
 
         # Botón para generar reporte PDF
         self.btn_generar_reporte = QPushButton("Generar Reporte PDF")
+        self.btn_generar_reporte.setFixedHeight(30)
+        self.btn_generar_reporte.setFont(self.fontNegrita)
         self.btn_generar_reporte.clicked.connect(self.generar_reporte)
-        layout.addWidget(self.btn_generar_reporte)
+
+        layout_generar_reporte = QHBoxLayout()
+        layout_generar_reporte.addWidget(self.btn_generar_reporte, alignment=Qt.AlignCenter)
+
+        self.layout_principal.addLayout(layout_generar_reporte)
 
         # Botón para regresar a la pantalla principal
         self.btn_regresar = QPushButton("Regresar")
+        self.btn_regresar.setFixedHeight(30)
+        self.btn_regresar.setFont(self.fontNegrita)
         self.btn_regresar.clicked.connect(self.regresar_a_principal)
-        layout.addWidget(self.btn_regresar)  # Aquí se usa el layout directamente
 
-        self.setLayout(layout)  # Configura el layout para el widget
+        layout_regresar = QHBoxLayout()
+        layout_regresar.addWidget(self.btn_regresar, alignment=Qt.AlignCenter)
+
+        self.layout_principal.addLayout(layout_regresar)
+
+        # Configura el layout principal para el widget
+        self.setLayout(self.layout_principal)
 
 
     def generar_reporte(self):
@@ -117,7 +132,18 @@ class ReportePDFScreen(QWidget):
         if not datos:
             return "No hay datos para generar el reporte"
 
-        archivo_pdf = f'reporte_cliente_{datos[0]}_{datos[1]}.pdf'
+        try:
+            carpeta_descargas = str(Path.home() / "Downloads")
+            if not os.path.exists(carpeta_descargas):
+                raise FileNotFoundError("La carpeta 'Downloads' no existe en este sistema.")
+        except Exception as e:
+            # Si falla, guardar en la carpeta base del usuario
+            carpeta_descargas = str(Path.home())
+            print(f"Advertencia: {e}. Guardando en {carpeta_descargas}")
+
+        archivo_pdf = os.path.join(carpeta_descargas, f'reporte_cliente_{datos[0]}_{datos[1]}.pdf')
+
+        # Crear el archivo PDF
         c = canvas.Canvas(archivo_pdf, pagesize=letter)
 
         # Configuración del PDF

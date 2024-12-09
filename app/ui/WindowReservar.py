@@ -89,6 +89,7 @@ class ReservaScreen(QWidget):
         self.label_nacionalidad = QLabel("Nacionalidad:")
         self.label_nacionalidad.setFont(self.fontNegrita)
         self.input_nacionalidad = QLineEdit()
+        self.input_nacionalidad.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_nacionalidad.setFixedHeight(30)
         layout.addWidget(self.label_nacionalidad, alignment=Qt.AlignLeft)
         layout.addWidget(self.input_nacionalidad, alignment=Qt.AlignLeft)
@@ -97,6 +98,7 @@ class ReservaScreen(QWidget):
         self.label_telefono.setFont(self.fontNegrita)
         self.input_telefono = QLineEdit()
         self.input_telefono.setFixedHeight(30)
+        self.input_telefono.setStyleSheet("QLineEdit { font-size: 14px; }")
         layout.addWidget(self.label_telefono, alignment=Qt.AlignLeft)
         layout.addWidget(self.input_telefono, alignment=Qt.AlignLeft)
 
@@ -104,6 +106,7 @@ class ReservaScreen(QWidget):
         self.label_email.setFont(self.fontNegrita)
         self.input_email = QLineEdit()
         self.input_email.setFixedHeight(30)
+        self.input_email.setStyleSheet("QLineEdit { font-size: 14px; }")
         layout.addWidget(self.label_email, alignment=Qt.AlignLeft)
         layout.addWidget(self.input_email, alignment=Qt.AlignLeft)
 
@@ -158,6 +161,7 @@ class ReservaScreen(QWidget):
         self.label_paquete.setFont(self.fontNegrita)
         self.input_paquete = QComboBox()
         self.input_paquete.setFixedHeight(30)
+        self.input_paquete.setFixedWidth(250)
         layout.addWidget(self.label_paquete)
         layout.addWidget(self.input_paquete, alignment=Qt.AlignLeft)
 
@@ -253,9 +257,9 @@ class ReservaScreen(QWidget):
             return
 
         # Agregar los paquetes al ComboBox
-        for id_paquete, tipo_paquete, precio_diario in paquetes:
-            paquete_texto = f"{tipo_paquete} - Precio Diario: {precio_diario} USD"
-            self.input_paquete.addItem(paquete_texto, (id_paquete, precio_diario))
+        for id_paquete, tipo_paquete, hotel, precio_diario in paquetes:
+            paquete_texto = f"{tipo_paquete} - Hotel: {hotel} - Precio Diario: {precio_diario} USD"
+            self.input_paquete.addItem(paquete_texto, (id_paquete, hotel, precio_diario))
 
     def obtener_id_paquete(self):
         # Obtener el ID del paquete seleccionado en el ComboBox
@@ -341,6 +345,7 @@ class ReservaScreen(QWidget):
         self.label_referencia = QLabel("Número de Referencia (si aplica):")
         self.label_referencia.setFont(self.fontNegrita)
         self.input_referencia = QLineEdit()
+        self.input_referencia.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_referencia.setFixedHeight(30)
         layout.addWidget(self.label_referencia)
         layout.addWidget(self.input_referencia, alignment=Qt.AlignLeft)
@@ -353,6 +358,8 @@ class ReservaScreen(QWidget):
         self.btn_regresar = QPushButton("Regresar")
         self.btn_regresar.setFont(self.fontNegrita)
         self.btn_regresar.setFixedSize(100, 35)
+        self.btn_regresar.setFixedWidth(180)
+        self.btn_regresar.setFixedHeight(35)
         self.btn_regresar.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(1))
         botones_layout.addWidget(self.btn_regresar)
     

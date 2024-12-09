@@ -31,8 +31,16 @@ class BuscarReservaScreen(QWidget):
 
         # Botón para regresar a la pantalla principal
         self.btn_regresar = QPushButton("Regresar")
+        self.btn_regresar.setFixedHeight(30)
+        self.btn_regresar.setFont(self.fontNegrita)
         self.btn_regresar.clicked.connect(self.regresar_a_principal)  # Conectar a la función de regreso
-        self.layout.addWidget(self.btn_regresar)
+        
+        # Contenedor horizontal para centrar el botón
+        layout_centrado = QHBoxLayout()
+        layout_centrado.addWidget(self.btn_regresar, alignment=Qt.AlignCenter)  # Agregar el botón con alineación centrada
+
+        # Agregar el contenedor centrado al diseño principal
+        self.layout.addLayout(layout_centrado)
 
         self.setLayout(self.layout)
 
@@ -48,6 +56,7 @@ class BuscarReservaScreen(QWidget):
         self.input_dni_pasaporte = QLineEdit(self)
         self.input_dni_pasaporte.setFixedHeight(30)
         self.input_dni_pasaporte.setPlaceholderText("Ingrese DNI o Pasaporte")  # Placeholder text
+        self.input_dni_pasaporte.setStyleSheet("QLineEdit { font-size: 14px; }")
 
         # Crear el botón de búsqueda y agregarlo a la derecha del campo
         self.btn_buscar = QPushButton("Buscar Reserva")
@@ -64,6 +73,7 @@ class BuscarReservaScreen(QWidget):
         self.label_nombre = QLabel("Nombre:")
         self.label_nombre.setFont(self.fontNegrita)
         self.input_nombre = QLineEdit(self)
+        self.input_nombre.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_nombre.setReadOnly(True)
         self.input_nombre.setFixedHeight(30)
         self.layout.addWidget(self.label_nombre, alignment=Qt.AlignLeft)
@@ -72,6 +82,7 @@ class BuscarReservaScreen(QWidget):
         self.label_telefono = QLabel("Teléfono:")
         self.label_telefono.setFont(self.fontNegrita)
         self.input_telefono = QLineEdit(self)
+        self.input_telefono.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_telefono.setReadOnly(True)  # Solo lectura
         self.input_telefono.setFixedHeight(30)
         self.layout.addWidget(self.label_telefono, alignment=Qt.AlignLeft)
@@ -80,6 +91,7 @@ class BuscarReservaScreen(QWidget):
         self.label_destino = QLabel("Destino:")
         self.label_destino.setFont(self.fontNegrita)
         self.input_destino = QLineEdit(self)
+        self.input_destino.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_destino.setReadOnly(True)  # Solo lectura
         self.input_destino.setFixedHeight(30)
         self.layout.addWidget(self.label_destino, alignment=Qt.AlignLeft)
@@ -88,6 +100,7 @@ class BuscarReservaScreen(QWidget):
         self.label_nacionalidad = QLabel("Nacionalidad:")
         self.label_nacionalidad.setFont(self.fontNegrita)
         self.input_nacionalidad = QLineEdit(self)
+        self.input_nacionalidad.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_nacionalidad.setReadOnly(True)  # Solo lectura
         self.input_nacionalidad.setFixedHeight(30)
         self.layout.addWidget(self.label_nacionalidad, alignment=Qt.AlignLeft)
@@ -96,6 +109,7 @@ class BuscarReservaScreen(QWidget):
         self.label_email = QLabel("Email:")
         self.label_email.setFont(self.fontNegrita)
         self.input_email = QLineEdit(self)
+        self.input_email.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_email.setReadOnly(True)  # Solo lectura
         self.input_email.setFixedHeight(30)
         self.layout.addWidget(self.label_email, alignment=Qt.AlignLeft)
@@ -104,6 +118,7 @@ class BuscarReservaScreen(QWidget):
         self.label_paquete = QLabel("Tipo de Paquete:")
         self.label_paquete.setFont(self.fontNegrita)
         self.input_paquete = QLineEdit(self)
+        self.input_paquete.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_paquete.setReadOnly(True)  # Solo lectura
         self.input_paquete.setFixedHeight(30)
         self.layout.addWidget(self.label_paquete, alignment=Qt.AlignLeft)
@@ -112,6 +127,7 @@ class BuscarReservaScreen(QWidget):
         self.label_monto_total = QLabel("Monto Total:")
         self.label_monto_total.setFont(self.fontNegrita)
         self.input_monto_total = QLineEdit(self)
+        self.input_monto_total.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_monto_total.setReadOnly(True)  # Solo lectura
         self.input_monto_total.setFixedHeight(30)
         self.layout.addWidget(self.label_monto_total, alignment=Qt.AlignLeft)
@@ -120,6 +136,7 @@ class BuscarReservaScreen(QWidget):
         self.label_fecha_reserva = QLabel("Fecha de Reserva:")
         self.label_fecha_reserva.setFont(self.fontNegrita)
         self.input_fecha_reserva = QLineEdit(self)
+        self.input_fecha_reserva.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_fecha_reserva.setReadOnly(True)  # Solo lectura
         self.input_fecha_reserva.setFixedHeight(30)
         self.layout.addWidget(self.label_fecha_reserva, alignment=Qt.AlignLeft)
@@ -128,6 +145,7 @@ class BuscarReservaScreen(QWidget):
         self.label_fecha_salida = QLabel("Fecha de Salida:")
         self.label_fecha_salida.setFont(self.fontNegrita)
         self.input_fecha_salida = QLineEdit(self)
+        self.input_fecha_salida.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_fecha_salida.setReadOnly(True)  # Solo lectura
         self.input_fecha_salida.setFixedHeight(30)
         self.layout.addWidget(self.label_fecha_salida, alignment=Qt.AlignLeft)
@@ -136,6 +154,7 @@ class BuscarReservaScreen(QWidget):
         self.label_duracion_dias = QLabel("Duración (Días):")
         self.label_duracion_dias.setFont(self.fontNegrita)
         self.input_duracion_dias = QLineEdit(self)
+        self.input_duracion_dias.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_duracion_dias.setReadOnly(True)  # Solo lectura
         self.input_duracion_dias.setFixedHeight(30)
         self.layout.addWidget(self.label_duracion_dias, alignment=Qt.AlignLeft)
@@ -144,6 +163,7 @@ class BuscarReservaScreen(QWidget):
         self.label_metodo_pago = QLabel("Método de Pago:")
         self.label_metodo_pago.setFont(self.fontNegrita)
         self.input_metodo_pago = QLineEdit(self)
+        self.input_metodo_pago.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_metodo_pago.setReadOnly(True)  # Solo lectura
         self.input_metodo_pago.setFixedHeight(30)
         self.layout.addWidget(self.label_metodo_pago, alignment=Qt.AlignLeft)

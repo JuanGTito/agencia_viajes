@@ -44,7 +44,7 @@ class Reserva:
 
                 # Crear la consulta sin usar parámetros
                 consulta = f"""
-                    SELECT id_paquete, tipo_paquete, precio_diario
+                    SELECT id_paquete, tipo_paquete, hotel, precio_diario
                     FROM paquete_turistico
                     WHERE id_cat_destino = {id_destino_seleccionado}
                 """

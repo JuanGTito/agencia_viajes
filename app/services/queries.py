@@ -43,7 +43,6 @@ def insertar_reserva(cursor, id_turista, id_paquete, fecha_salida, duracion_dias
         print(f"Error al insertar reserva: {e}")  # Manejo de errores
         raise  # Propagar el error para manejo externo
 
-
 def insertar_pago(cursor, id_turista, id_reserva, metodo, monto_total, ref_num=None):
     """Inserta un nuevo pago realizado por un turista."""
     print(f"Insertando pago: id_turista={id_turista}, id_reserva={id_reserva}, metodo={metodo}, monto_total={monto_total}, ref_num={ref_num}")

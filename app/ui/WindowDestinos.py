@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QMessageBox, QHBoxLayout
 from PyQt5.QtGui import QPixmap, QFont, QIcon
+from PyQt5.QtCore import Qt
 from app.models.reserva import Reserva 
 from app.ui.WindowPrincipal import VentanaPrincipal
 import os
@@ -40,9 +41,18 @@ class DestinosScreen(QWidget):
         
         self.layout.addWidget(self.tabla_destinos)
 
+        # Botón para regresar a la pantalla principal
         self.btn_regresar = QPushButton("Regresar")
+        self.btn_regresar.setFixedHeight(30)
+        self.btn_regresar.setFont(self.fontNegrita)
         self.btn_regresar.clicked.connect(self.regresar_a_principal)  # Conectar a la función de regreso
-        self.layout.addWidget(self.btn_regresar)
+        
+        # Contenedor horizontal para centrar el botón
+        layout_centrado = QHBoxLayout()
+        layout_centrado.addWidget(self.btn_regresar, alignment=Qt.AlignCenter)  # Agregar el botón con alineación centrada
+
+        # Agregar el contenedor centrado al diseño principal
+        self.layout.addLayout(layout_centrado)
 
         self.setLayout(self.layout)
 
