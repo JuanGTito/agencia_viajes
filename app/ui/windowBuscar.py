@@ -9,7 +9,7 @@ class BuscarReservaScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Buscar Reserva')
-        self.setMinimumSize(600, 800)
+        self.setFixedSize(600, 750)
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))

@@ -9,7 +9,7 @@ class DestinosScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Destinos")
-        self.setMinimumSize(600, 800)
+        self.setFixedSize(600, 800)
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))

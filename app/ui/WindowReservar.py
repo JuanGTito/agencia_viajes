@@ -10,7 +10,7 @@ class ReservaScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Formulario de Reserva')
-        self.setMinimumSize(600, 800)
+        self.setFixedSize(700, 750)
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
@@ -44,6 +44,8 @@ class ReservaScreen(QWidget):
         self.label_tipo_doc.setFont(self.fontNegrita)
         self.input_tipo_doc = QComboBox()
         self.input_tipo_doc.addItems(["DNI", "Pasaporte"])
+        self.input_tipo_doc.setStyleSheet(""" QComboBox { font-size: 14px; } QComboBox QAbstractItemView { font-size: 14px; } """)
+        self.input_tipo_doc.setFixedHeight(30)
         layout.addWidget(self.label_tipo_doc, alignment=Qt.AlignLeft)
         layout.addWidget(self.input_tipo_doc, alignment=Qt.AlignLeft)
 
@@ -76,6 +78,7 @@ class ReservaScreen(QWidget):
         self.input_fecha_nacimiento = QDateEdit()
         self.input_fecha_nacimiento.setCalendarPopup(True)
         self.input_fecha_nacimiento.setFixedHeight(30)
+        self.input_fecha_nacimiento.setStyleSheet(""" QDateEdit { font-size: 14px; } QDateEdit QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_fecha_nacimiento, alignment=Qt.AlignLeft)
         layout.addWidget(self.input_fecha_nacimiento, alignment=Qt.AlignLeft)
 
@@ -83,6 +86,8 @@ class ReservaScreen(QWidget):
         self.label_genero.setFont(self.fontNegrita)
         self.input_genero = QComboBox()
         self.input_genero.addItems(["Masculino", "Femenino"])
+        self.input_genero.setFixedHeight(30)
+        self.input_genero.setStyleSheet(""" QComboBox { font-size: 14px; } QComboBox QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_genero, alignment=Qt.AlignLeft)
         layout.addWidget(self.input_genero, alignment=Qt.AlignLeft)
 
@@ -149,8 +154,9 @@ class ReservaScreen(QWidget):
         # Agregar destinos al combo
         for id_destino, (destino, descripcion) in destinos.items():
             self.input_destino.addItem(f"{destino} - Descripción: {descripcion}", id_destino)
-
+            
         self.input_destino.currentIndexChanged.connect(self.actualizar_campo_con_id_destino)
+        self.input_destino.setStyleSheet(""" QComboBox { font-size: 14px; } QComboBox QAbstractItemView { font-size: 14px; } """)
         self.input_destino.setFixedHeight(30)
 
         layout.addWidget(self.label_destino)
@@ -161,7 +167,8 @@ class ReservaScreen(QWidget):
         self.label_paquete.setFont(self.fontNegrita)
         self.input_paquete = QComboBox()
         self.input_paquete.setFixedHeight(30)
-        self.input_paquete.setFixedWidth(250)
+        self.input_paquete.setFixedWidth(270)
+        self.input_paquete.setStyleSheet(""" QComboBox { font-size: 14px; } QComboBox QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_paquete)
         layout.addWidget(self.input_paquete, alignment=Qt.AlignLeft)
 
@@ -171,6 +178,7 @@ class ReservaScreen(QWidget):
         self.input_fecha_salida = QDateEdit()
         self.input_fecha_salida.setMinimumDate(QDate.currentDate())
         self.input_fecha_salida.setFixedHeight(30)
+        self.input_fecha_salida.setStyleSheet(""" QDateEdit { font-size: 14px; } QDateEdit QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_fecha_salida)
         layout.addWidget(self.input_fecha_salida, alignment=Qt.AlignLeft)
 
@@ -182,6 +190,7 @@ class ReservaScreen(QWidget):
         self.input_duracion.setMaximum(365)  # Máximo 365 días (un año)
         self.input_duracion.textChanged.connect(self.calcular_precio_total)
         self.input_duracion.setFixedHeight(30)
+        self.input_duracion.setStyleSheet(""" QSpinBox { font-size: 14px; } QSpinBox QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_duracion)
         layout.addWidget(self.input_duracion, alignment=Qt.AlignLeft)
 
@@ -191,6 +200,7 @@ class ReservaScreen(QWidget):
         self.input_fecha_regreso = QDateEdit()
         self.input_fecha_regreso.setReadOnly(True)  # Solo lectura
         self.input_fecha_regreso.setFixedHeight(30)
+        self.input_fecha_regreso.setStyleSheet(""" QDateEdit { font-size: 14px; } QDateEdit QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_fecha_regreso)
         layout.addWidget(self.input_fecha_regreso, alignment=Qt.AlignLeft)
 
@@ -265,12 +275,17 @@ class ReservaScreen(QWidget):
         # Obtener el ID del paquete seleccionado en el ComboBox
         paquete_seleccionado = self.input_paquete.currentData()
         if paquete_seleccionado:
-            id_paquete, _ = paquete_seleccionado
-            print(f"ID del paquete seleccionado: {id_paquete}")
-            return id_paquete
+            try:
+                # Intentar desempaquetar solo el primer valor
+                id_paquete, *resto = paquete_seleccionado
+                print(f"ID del paquete seleccionado: {id_paquete}")
+                return id_paquete
+            except ValueError:
+                print("Paquete no válido: los datos no son correctos.")
+                return None
         else:
             print("No se ha seleccionado un paquete válido.")
-            return None
+            return None 
 
     def obtener_precio_por_paquete(self, id_paquete):
         # Conectar con la base de datos y obtener el precio diario según el id_paquete
@@ -313,12 +328,22 @@ class ReservaScreen(QWidget):
 
         paquete_seleccionado = self.input_paquete.currentData()
         if paquete_seleccionado:
-            _, precio_diario = paquete_seleccionado
-            total_a_pagar = dias_estancia * precio_diario
-            self.input_total_a_pagar.setText(f"{total_a_pagar} USD")
+            try:
+                # Desempaquetar los tres primeros valores
+                id_paquete, hotel, tipo_paquete, *resto = paquete_seleccionado
+
+                # Obtener el precio diario desde la base de datos usando el id_paquete
+                precio_diario = self.obtener_precio_por_paquete(id_paquete)
+                if precio_diario is not None:
+                    total_a_pagar = dias_estancia * precio_diario
+                    self.input_total_a_pagar.setText(f"{total_a_pagar} USD")
+                else:
+                    self.input_total_a_pagar.setText("No se pudo obtener el precio del paquete")
+            except ValueError:
+                self.input_total_a_pagar.setText("Paquete no válido")
         else:
             self.input_total_a_pagar.setText("Paquete no válido")
-
+    
     def crear_reserva_pago(self):
         """Tercera sección: Reserva y Pago"""
         layout = QVBoxLayout()
@@ -329,6 +354,7 @@ class ReservaScreen(QWidget):
         self.input_total_a_pagar = QLineEdit()
         self.input_total_a_pagar.setReadOnly(True)
         self.input_total_a_pagar.setFixedHeight(30)
+        self.input_total_a_pagar.setStyleSheet("QLineEdit { font-size: 14px; }")
         layout.addWidget(self.label_total_a_pagar)
         layout.addWidget(self.input_total_a_pagar, alignment=Qt.AlignLeft)
     
@@ -338,6 +364,7 @@ class ReservaScreen(QWidget):
         self.input_metodo_pago = QComboBox()
         self.input_metodo_pago.addItems(["Transferencia", "Efectivo"])
         self.input_metodo_pago.setFixedHeight(30)
+        self.input_metodo_pago.setStyleSheet(""" QComboBox { font-size: 14px; } QComboBox QAbstractItemView { font-size: 14px; } """)
         layout.addWidget(self.label_metodo_pago)
         layout.addWidget(self.input_metodo_pago, alignment=Qt.AlignLeft)
     
@@ -347,6 +374,7 @@ class ReservaScreen(QWidget):
         self.input_referencia = QLineEdit()
         self.input_referencia.setStyleSheet("QLineEdit { font-size: 14px; }")
         self.input_referencia.setFixedHeight(30)
+        self.input_referencia.setStyleSheet("QLineEdit { font-size: 14px; }")
         layout.addWidget(self.label_referencia)
         layout.addWidget(self.input_referencia, alignment=Qt.AlignLeft)
     

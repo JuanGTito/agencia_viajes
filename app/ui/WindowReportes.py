@@ -14,7 +14,7 @@ class ReportePDFScreen(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Generar Reporte PDF')
-        self.setMinimumSize(300, 400)
+        self.setFixedSize(300, 400)
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
