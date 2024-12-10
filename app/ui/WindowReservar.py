@@ -4,6 +4,7 @@ from PyQt5.QtCore import QDate, Qt
 import os
 from app.models.reserva import Reserva
 from app.ui.WindowPrincipal import VentanaPrincipal
+from app.ui.WindowImpresion import VentanaImpresion
 from app.services.database import crear_conexion
 
 class ReservaScreen(QWidget):
@@ -464,7 +465,12 @@ class ReservaScreen(QWidget):
                                             nacionalidad, duracion_dias, fecha_salida, monto_total, id_paquete, metodo_pago, referencia):
                 # Mensaje de éxito
                 QMessageBox.information(self, "Reserva Enviada", "Tu reserva ha sido enviada con éxito.")
-                self.close()  # Cierra el formulario
+
+                # Abrir la ventana de impresión
+                ventana_impresion = VentanaImpresion(num_doc, self)
+                ventana_impresion.exec()
+
+                self.close()  # Cierra el formulario principal
             else:
                 # Si la reserva no se guarda correctamente
                 QMessageBox.warning(self, "Error al guardar", "Hubo un problema al guardar tu reserva. Inténtalo de nuevo.")
