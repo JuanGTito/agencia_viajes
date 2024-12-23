@@ -1,15 +1,25 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5.QtWidgets import QDialog, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QPushButton, QMessageBox, QHBoxLayout
 from PyQt5.QtGui import QPixmap, QFont, QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from app.models.reserva import Reserva 
 from app.ui.WindowPrincipal import VentanaPrincipal
+from app.ui.WindowAdd import AgregarDestinoDialog
+from app.ui.WindowEdit import EditarDestinoDialog
+from app.services.database import crear_conexion
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
 class DestinosScreen(QWidget):
-    def __init__(self):
+    def __init__(self, usuario):
         super().__init__()
         self.setWindowTitle("Destinos")
-        self.setFixedSize(600, 800)
+        self.setFixedSize(700, 800)
+
+        print(f"Nombre de usuario recibido: {usuario}")
+        
+        self.usuario = usuario
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
@@ -23,14 +33,28 @@ class DestinosScreen(QWidget):
         # Layout principal
         self.layout = QVBoxLayout()
 
+        # Mostrar el nombre del usuario en la etiqueta
+        self.label_usuario = QLabel(f"Bienvenido, {self.usuario}!")  # Mostrar el nombre del usuario
+        self.label_usuario.setFont(self.fontNegrita)
+        self.layout.addWidget(self.label_usuario, alignment=Qt.AlignCenter)
+
         # Etiqueta
         self.label = QLabel("Destinos Disponibles:")
         self.layout.addWidget(self.label)
 
+         # Botón de agregar
+        if self.usuario == "admin":
+            self.btn_agregar = QPushButton("Agregar Destino")
+            self.btn_agregar.setFont(self.fontNegrita)
+            self.btn_agregar.clicked.connect(self.agregar_destino)
+            layout_izquierda = QHBoxLayout()
+            layout_izquierda.addWidget(self.btn_agregar, alignment=Qt.AlignLeft)
+            self.layout.addLayout(layout_izquierda)
+
         # Tabla de destinos
         self.tabla_destinos = QTableWidget()
-        self.tabla_destinos.setColumnCount(2)  # Dos columnas: Nombre y Precio
-        self.tabla_destinos.setHorizontalHeaderLabels(["Lugar", "Descripcion"])  # Encabezados de columnas
+        self.tabla_destinos.setColumnCount(3)  # Dos columnas: Nombre y Precio
+        self.tabla_destinos.setHorizontalHeaderLabels(["Lugar", "Descripcion", "Accion"])  # Encabezados de columnas
         self.cargar_destinos()  # Cargar destinos desde la base de datos
         
         # Configuración de la tabla
@@ -38,7 +62,12 @@ class DestinosScreen(QWidget):
         self.tabla_destinos.setSelectionMode(QTableWidget.NoSelection)  # Sin selección
         self.tabla_destinos.setShowGrid(False)  # Ocultar líneas de cuadrícula
         self.tabla_destinos.setAlternatingRowColors(True)  # Colores alternos para filas
-        
+
+        row_height = 50  # Puedes ajustar este valor según el tamaño que desees
+        self.tabla_destinos.setRowHeight(0, row_height)  # Establecer altura para la primera fila
+        for row in range(self.tabla_destinos.rowCount()):
+            self.tabla_destinos.setRowHeight(row, row_height)
+
         self.layout.addWidget(self.tabla_destinos)
 
         # Botón para regresar a la pantalla principal
@@ -73,10 +102,70 @@ class DestinosScreen(QWidget):
             self.tabla_destinos.setItem(row, 0, QTableWidgetItem(nombre))  # Columna 0: Nombre del lugar
             self.tabla_destinos.setItem(row, 1, QTableWidgetItem(descripcion))  # Columna 1: Precio
 
+            # Crear botones de Editar y Eliminar y agregarlos a la tabla
+            btn_editar = QPushButton("Editar")
+            btn_editar.clicked.connect(lambda _, row=row: self.editar_destino(row))
+            btn_eliminar = QPushButton("Eliminar")
+            btn_eliminar.clicked.connect(lambda _, row=row: self.eliminar_destino(row))
+
+            self.tabla_destinos.setCellWidget(row, 2, self.crear_acciones_layout(btn_editar, btn_eliminar))
+
         # Ajustar tamaño de columnas
         self.tabla_destinos.resizeColumnsToContents()  # Ajustar el tamaño de las columnas automáticamente
 
+    def crear_acciones_layout(self, btn_editar, btn_eliminar):
+        """Crea un layout horizontal con los botones de editar y eliminar."""
+        layout = QHBoxLayout()
+        layout.addWidget(btn_editar)
+        layout.addWidget(btn_eliminar)
+        layout.setAlignment(Qt.AlignCenter)
+        widget = QWidget()
+        widget.setLayout(layout)
+        return widget
+
+    def agregar_destino(self):
+        """Lógica para agregar un nuevo destino desde la pantalla de destinos."""
+        dialog = AgregarDestinoDialog(self)  # Crear una instancia del diálogo
+        if dialog.exec_() == QDialog.Accepted:  # Mostrar el diálogo de forma modal
+            self.cargar_destinos()  # Volver a cargar los destinos en la tabla tras agregar uno
+
+    def editar_destino(self, row):
+        """Lógica para editar un destino existente desde la pantalla principal."""
+        nombre = self.tabla_destinos.item(row, 0).text()
+        descripcion = self.tabla_destinos.item(row, 1).text()
+
+        dialog = EditarDestinoDialog(nombre, descripcion, self)  # Crear una instancia del diálogo con datos precargados
+        if dialog.exec_() == QDialog.Accepted:  # Mostrar el diálogo de forma modal
+            self.cargar_destinos()  # Volver a cargar los destinos en la tabla tras editar uno
+
+    def eliminar_destino(self, row):
+        """Lógica para eliminar un destino."""
+        nombre = self.tabla_destinos.item(row, 0).text()
+
+        respuesta = QMessageBox.question(
+            self,
+            "Confirmar Eliminación",
+            f"¿Está seguro de que desea eliminar el destino '{nombre}'?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if respuesta == QMessageBox.Yes:
+            try:
+                # Usar la función `crear_conexion` para conectarse a la base de datos
+                conn = crear_conexion()
+                cursor = conn.cursor()
+
+                # Eliminar el destino de la base de datos
+                cursor.execute("DELETE FROM catalogo_destino WHERE destino = %s", (nombre,))
+                conn.commit()
+                conn.close()
+
+                QMessageBox.information(self, "Destino Eliminado", "El destino ha sido eliminado exitosamente.")
+                self.cargar_destinos()  # Volver a cargar los destinos en la tabla tras eliminar uno
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Error al eliminar el destino: {str(e)}")
+
     def regresar_a_principal(self):
         self.close()
-        self.pantalla_principal = VentanaPrincipal()
+        self.pantalla_principal = VentanaPrincipal(self.usuario)
         self.pantalla_principal.show()

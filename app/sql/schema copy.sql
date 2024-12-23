@@ -57,15 +57,25 @@ CREATE TABLE IF NOT EXISTS pago (
     FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva) ON DELETE CASCADE
 );
 
--- Tabla de usuarios
+-- Tabla de usuario
 CREATE TABLE IF NOT EXISTS usuario (
     id_usuario INT PRIMARY KEY AUTO_INCREMENT,
-    user_nombre VARCHAR(50) UNIQUE NOT NULL,
-    contrasena VARCHAR(255) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    rol ENUM('Usuario', 'Admin') DEFAULT 'Usuario',
-    f_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    nombre VARCHAR(50) NOT NULL, -- Nuevo campo para el nombre
+    apellido VARCHAR(50) NOT NULL, -- Nuevo campo para el apellido
+    correo VARCHAR(100) UNIQUE NOT NULL, -- Campo actualizado de email a correo
+    telefono VARCHAR(15), -- Nuevo campo para el teléfono
+    usuario VARCHAR(50) UNIQUE NOT NULL, -- Nuevo campo para el nombre de usuario
+    contrasena VARCHAR(255) NOT NULL, -- Campo existente
+    rol ENUM('Usuario', 'Admin') DEFAULT 'Usuario', -- Campo existente
+    f_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Campo existente
 );
+
+-- Insertar usuario inicial
+INSERT INTO usuario (id_usuario, nombre, apellido, correo, telefono, usuario, contrasena, rol)
+VALUES (1, 'Admin', 'Admin', 'admin@example.com', '1234567890', 'admin', '$2a$12$92pagS42slBU3.MSX9TeM.jlBl/3hRWTWz.NBt8hx4Fx9HxbwoBLW', 'Admin');
+
+INSERT INTO usuario (nombre, apellido, correo, telefono, usuario, contrasena, rol)
+VALUES ('Super', 'Admin', 'superadmin@example.com', '1234567890', 'superadmin', 'hashed_password_here', 'Admin');
 
 -- Insertar destinos en catalogo_destino
 INSERT INTO catalogo_destino (destino, descripcion)

@@ -8,10 +8,12 @@ from app.ui.WindowImpresion import VentanaImpresion
 from app.services.database import crear_conexion
 
 class ReservaScreen(QWidget):
-    def __init__(self):
+    def __init__(self, usuario):
         super().__init__()
         self.setWindowTitle('Formulario de Reserva')
         self.setFixedSize(700, 750)
+        
+        self.usuario = usuario
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
@@ -480,7 +482,7 @@ class ReservaScreen(QWidget):
 
     def regresar_a_principal(self):
         self.close()
-        self.pantalla_principal = VentanaPrincipal()
+        self.pantalla_principal = VentanaPrincipal(self.usuario)
         self.pantalla_principal.show()
 
 

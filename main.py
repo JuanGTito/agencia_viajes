@@ -18,7 +18,8 @@ def main():
     login = VentanaLogin()
     if login.exec_() == QDialog.Accepted:
         # Si el login es exitoso, mostrar la ventana principal
-        ventana = VentanaPrincipal()
+        usuario = login.usuario
+        ventana = VentanaPrincipal(usuario)
         ventana.show()
         sys.exit(app.exec_())
     else:

@@ -9,6 +9,8 @@ class VentanaLogin(QDialog):
     def __init__(self):
         super().__init__()
 
+        self.usuario = None
+
         self.setWindowTitle('Login')
         self.setFixedSize(500, 700)
         self.setWindowIcon(QIcon(os.getenv('IMG_ICO')))
@@ -112,6 +114,7 @@ class VentanaLogin(QDialog):
         contrasena = self.input_contrasena.text()
 
         if self.verificar_credenciales(usuario, contrasena):
+            self.usuario = usuario
             self.accept()
         else:
             QMessageBox.warning(self, "Error", "Usuario o contraseña incorrectos.")
@@ -140,3 +143,4 @@ class VentanaLogin(QDialog):
         finally:
             cursor.close()
             conn.close()
+    

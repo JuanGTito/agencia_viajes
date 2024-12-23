@@ -11,10 +11,12 @@ import os
 from pathlib import Path
 
 class ReportePDFScreen(QWidget):
-    def __init__(self):
+    def __init__(self, usuario):
         super().__init__()
         self.setWindowTitle('Generar Reporte PDF')
         self.setFixedSize(300, 400)
+
+        self.usuario = usuario
 
         self.fondo_label = QLabel(self)
         self.fondo_label.setPixmap(QPixmap(os.getenv('IMG_FONDO')))
@@ -210,5 +212,5 @@ class ReportePDFScreen(QWidget):
     
     def regresar_a_principal(self):
         self.close()
-        self.pantalla_principal = VentanaPrincipal()
+        self.pantalla_principal = VentanaPrincipal(self.usuario)
         self.pantalla_principal.show()
