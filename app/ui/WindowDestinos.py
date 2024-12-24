@@ -33,17 +33,12 @@ class DestinosScreen(QWidget):
         # Layout principal
         self.layout = QVBoxLayout()
 
-        # Mostrar el nombre del usuario en la etiqueta
-        self.label_usuario = QLabel(f"Bienvenido, {self.usuario}!")  # Mostrar el nombre del usuario
-        self.label_usuario.setFont(self.fontNegrita)
-        self.layout.addWidget(self.label_usuario, alignment=Qt.AlignCenter)
-
         # Etiqueta
         self.label = QLabel("Destinos Disponibles:")
         self.layout.addWidget(self.label)
 
-         # Botón de agregar
-        if self.usuario == "admin":
+        # Verificar si el usuario es admin antes de mostrar el botón de agregar
+        if self.es_admin(self.usuario):
             self.btn_agregar = QPushButton("Agregar Destino")
             self.btn_agregar.setFont(self.fontNegrita)
             self.btn_agregar.clicked.connect(self.agregar_destino)
@@ -53,7 +48,7 @@ class DestinosScreen(QWidget):
 
         # Tabla de destinos
         self.tabla_destinos = QTableWidget()
-        self.tabla_destinos.setColumnCount(3)  # Dos columnas: Nombre y Precio
+        self.tabla_destinos.setColumnCount(3)  # Tres columnas: Lugar, Descripcion, Accion
         self.tabla_destinos.setHorizontalHeaderLabels(["Lugar", "Descripcion", "Accion"])  # Encabezados de columnas
         self.cargar_destinos()  # Cargar destinos desde la base de datos
         
@@ -85,33 +80,73 @@ class DestinosScreen(QWidget):
 
         self.setLayout(self.layout)
 
+    def es_admin(self, usuario):
+        """
+        Verifica si el usuario tiene rol de administrador.
+        Retorna True si el usuario es administrador, False en caso contrario.
+        """
+        try:
+            conn = crear_conexion()
+            cursor = conn.cursor()
+            cursor.execute("SELECT rol FROM usuario WHERE user_nombre = %s", (usuario,))
+            datos = cursor.fetchone()
+            conn.close()
+
+            if datos and datos[0] == "Admin":  # Verifica si el tipo de usuario es 'admin'
+                return True
+            return False
+        except Exception as e:
+            print(f"Error al verificar rol de administrador: {e}")
+            return False
+
     def cargar_destinos(self):
         """Carga los destinos en la tabla."""
         reserva = Reserva()  # Instancia de la clase Reserva
         destinos = reserva.obtener_destinos()  # Obtener destinos
-
+        
         if not destinos:
             QMessageBox.warning(self, "Sin Destinos", "No hay destinos disponibles.")
             return
         
+        # Verificar si el usuario es administrador
+        es_admin = self.es_admin(self.usuario)
+    
         # Configurar filas de la tabla
         self.tabla_destinos.setRowCount(len(destinos))  # Establecer el número de filas según el número de destinos
+    
+        # Mostrar la columna "Acción" solo si el usuario es administrador
+        if es_admin:
+            self.tabla_destinos.setColumnCount(3)  # Asegurarse de que haya tres columnas: Lugar, Descripción y Acción
+        else:
+            self.tabla_destinos.setColumnCount(2)  # Si no es admin, mostrar solo dos columnas (sin "Acción")
         
         # Llenar la tabla con los datos de los destinos
         for row, (id_destino, (nombre, descripcion)) in enumerate(destinos.items()):
-            self.tabla_destinos.setItem(row, 0, QTableWidgetItem(nombre))  # Columna 0: Nombre del lugar
-            self.tabla_destinos.setItem(row, 1, QTableWidgetItem(descripcion))  # Columna 1: Precio
-
-            # Crear botones de Editar y Eliminar y agregarlos a la tabla
-            btn_editar = QPushButton("Editar")
-            btn_editar.clicked.connect(lambda _, row=row: self.editar_destino(row))
-            btn_eliminar = QPushButton("Eliminar")
-            btn_eliminar.clicked.connect(lambda _, row=row: self.eliminar_destino(row))
-
-            self.tabla_destinos.setCellWidget(row, 2, self.crear_acciones_layout(btn_editar, btn_eliminar))
-
-        # Ajustar tamaño de columnas
+            # Columna 0: Nombre del lugar
+            self.tabla_destinos.setItem(row, 0, QTableWidgetItem(nombre))
+            
+            # Columna 1: Descripción
+            descripcion_item = QTableWidgetItem(descripcion)
+            descripcion_item.setTextAlignment(Qt.AlignTop)  # Alinear la descripción hacia arriba
+            self.tabla_destinos.setItem(row, 1, descripcion_item)
+    
+            # Habilitar el ajuste de texto para la columna de Descripción
+            self.tabla_destinos.item(row, 1).setText(descripcion)  # Actualiza el texto en la celda
+            self.tabla_destinos.setWordWrap(True)  # Habilitar ajuste de texto
+    
+            # Si el usuario es admin, agregar los botones de Editar y Eliminar
+            if es_admin:
+                btn_editar = QPushButton("Editar")
+                btn_editar.clicked.connect(lambda _, row=row: self.editar_destino(row))
+                btn_eliminar = QPushButton("Eliminar")
+                btn_eliminar.clicked.connect(lambda _, row=row: self.eliminar_destino(row))
+    
+                self.tabla_destinos.setCellWidget(row, 2, self.crear_acciones_layout(btn_editar, btn_eliminar))
+        
+        # Ajustar tamaño de columnas y filas automáticamente
         self.tabla_destinos.resizeColumnsToContents()  # Ajustar el tamaño de las columnas automáticamente
+        self.tabla_destinos.resizeRowsToContents()  # Ajustar el tamaño de las filas automáticamente
+
 
     def crear_acciones_layout(self, btn_editar, btn_eliminar):
         """Crea un layout horizontal con los botones de editar y eliminar."""
@@ -169,3 +204,4 @@ class DestinosScreen(QWidget):
         self.close()
         self.pantalla_principal = VentanaPrincipal(self.usuario)
         self.pantalla_principal.show()
+

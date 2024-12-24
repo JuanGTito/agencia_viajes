@@ -1,3 +1,4 @@
+# app/services/database.py
 import pymysql
 import os
 from dotenv import load_dotenv
@@ -14,8 +15,7 @@ def crear_conexion():
             password=os.getenv('DB_PASSWORD'),
             database=os.getenv('DB_NAME')
         )
-        print("Conexión a la base de datos establecida.")
-        return conexion
-    except pymysql.MySQLError as err:  # Cambiar a pymysql.MySQLError
+        return conexion  # No imprimir el mensaje aquí
+    except pymysql.MySQLError as err:
         print(f"Error al conectar a la base de datos: {err}")
         return None

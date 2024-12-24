@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox, QPushButton, QMessageBox
+import bcrypt
 from app.services.database import crear_conexion
 
 class EditarUsuarioWindow(QDialog):
@@ -59,7 +60,7 @@ class EditarUsuarioWindow(QDialog):
                 self.input_correo.setText(usuario[2])
                 self.input_telefono.setText(usuario[3])
                 self.input_usuario.setText(usuario[4])
-                self.input_contrasena.setText(usuario[5])
+                self.input_contrasena.setText('')  # No mostrar la contraseña original
                 self.input_rol.setCurrentText(usuario[6])
             else:
                 QMessageBox.warning(self, "Error", "Usuario no encontrado.")
@@ -82,13 +83,16 @@ class EditarUsuarioWindow(QDialog):
             QMessageBox.warning(self, "Campos incompletos", "Por favor, complete todos los campos obligatorios.")
             return
 
+        # Encriptar la contraseña antes de guardarla
+        contrasena_encriptada = bcrypt.hashpw(contrasena.encode('utf-8'), bcrypt.gensalt())
+
         try:
             conn = crear_conexion()
             cursor = conn.cursor()
             cursor.execute(
                 "UPDATE usuario SET nombre = %s, apellido = %s, correo = %s, telefono = %s, "
-                "usuario = %s, contrasena = %s, rol = %s WHERE id_usuario = %s",
-                (nombre, apellido, correo, telefono, usuario, contrasena, rol, self.id_usuario)
+                "user_nombre = %s, contrasena = %s, rol = %s WHERE id_usuario = %s",
+                (nombre, apellido, correo, telefono, usuario, contrasena_encriptada, rol, self.id_usuario)
             )
             conn.commit()
             conn.close()
