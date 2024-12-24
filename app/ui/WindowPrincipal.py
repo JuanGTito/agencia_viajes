@@ -109,9 +109,8 @@ class VentanaPrincipal(QWidget):
         button_layout.setAlignment(Qt.AlignCenter)  # Alineación de los botones al centro
 
         self.agregar_boton_con_imagen(button_layout, "Reservar", os.getenv('IMG_RESERVAR'), self.show_reserva)
-        self.agregar_boton_con_imagen(button_layout, "Buscar", os.getenv('IMG_BUSCAR'), self.mostrar_menu_buscar)
+        self.agregar_boton_con_imagen(button_layout, "Buscar", os.getenv('IMG_BUSCAR'), self.show_buscar)
         self.agregar_boton_con_imagen(button_layout, "Destinos", os.getenv('IMG_DESTINO'), self.show_destinos)
-
         self.agregar_boton_con_imagen(button_layout, "Reportes", os.getenv('IMG_REPORTE'), self.show_reportes)
 
         # Agregar el layout de botones al layout principal
@@ -160,31 +159,6 @@ class VentanaPrincipal(QWidget):
         # Agregar el layout horizontal al layout de botones
         layout.addLayout(boton_layout)
 
-    def mostrar_menu_buscar(self):
-        """Función para mostrar el menú cuando se hace clic en el botón 'Buscar'."""
-        menu = QMenu(self)
-
-        # Crear las opciones del menú
-        opcion_dni = QAction("DNI", self)
-        opcion_destino = QAction("Destino", self)
-        opcion_familiar = QAction("Familiar", self)
-        opcion_otros = QAction("Otros Destinos", self)
-
-        # Agregar las acciones al menú
-        menu.addAction(opcion_dni)
-        menu.addAction(opcion_destino)
-        menu.addAction(opcion_familiar)
-        menu.addAction(opcion_otros)
-
-        # Conectar las acciones a sus respectivas funciones
-        opcion_dni.triggered.connect(self.show_buscar_dni)
-        opcion_destino.triggered.connect(self.mostrar_destino_1)
-        opcion_familiar.triggered.connect(self.mostrar_destino_familiar)
-        opcion_otros.triggered.connect(self.mostrar_otros_destinos)
-
-        # Mostrar el menú en el botón
-        menu.exec_(self.mapToGlobal(self.sender().pos()))
-
     def show_reserva(self):
         # Lógica para abrir la pantalla de reserva
         from app.ui.WindowReservar import ReservaScreen  # Importar aquí para evitar problemas de importación circular
@@ -192,24 +166,12 @@ class VentanaPrincipal(QWidget):
         self.reserve_screen.show()
         self.hide()  # Ocultar la ventana principal
 
-    def show_buscar_dni(self):
+    def show_buscar(self):
         # Lógica para abrir la pantalla de búsqueda
-        from app.ui.windowBuscarDni import BuscarReservaScreen  # Importar aquí para evitar problemas de importación circular
+        from app.ui.windowBuscar import BuscarReservaScreen  # Importar aquí para evitar problemas de importación circular
         self.buscar_screen = BuscarReservaScreen(self.usuario)
         self.buscar_screen.show()
         self.hide()  # Ocultar la ventana principal
-
-    def mostrar_destino_1(self):
-        """Mostrar el destino 1 cuando se selecciona la opción 'Destino'."""
-        print("Mostrando destino 1")
-
-    def mostrar_destino_familiar(self):
-        """Mostrar los destinos familiares cuando se selecciona la opción 'Familiar'."""
-        print("Mostrando destinos familiares")
-
-    def mostrar_otros_destinos(self):
-        """Mostrar otros destinos cuando se selecciona la opción 'Otros Destinos'."""
-        print("Mostrando otros destinos")
 
     def show_destinos(self, usuario):
         # Lógica para abrir la pantalla de destinos

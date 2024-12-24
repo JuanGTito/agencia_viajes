@@ -56,45 +56,29 @@ def insertar_pago(cursor, id_turista, id_reserva, metodo, monto_total, ref_num=N
         print(f"Error al insertar pago: {e}")  # Manejo de errores
         raise  # Propagar el error para manejo externo
 
-def obtener_reserva(numero_documento):
-    """Buscar una reserva en la base de datos usando el número de documento."""
-    if not numero_documento:
-        print("El número de documento es obligatorio.")
-        return None  # Validación previa de entrada
+def obtener_reserva(campo_busqueda, valor):
+    """Buscar reservas en la base de datos usando un campo y un valor."""
+    if not campo_busqueda or not valor:
+        print("El campo y el valor de búsqueda son obligatorios.")
+        return None
 
     conn = crear_conexion()  # Conectar a la base de datos
     if conn is None:
         print("No se pudo conectar a la base de datos.")
-        return None  # Retornar None si no se puede conectar
+        return None
 
     cursor = conn.cursor()
     try:
-        # Consultar en la tabla turistas usando el número de documento
-        cursor.execute(""" 
-            SELECT nombre, apellido, telefono, nacionalidad, email
-            FROM turista
-            WHERE num_doc = %s
-        """, (numero_documento,))
-
-        turista = cursor.fetchone()
-        if not turista:
-            print(f"No se encontró un turista con el número de documento: {numero_documento}")
-            return None  # Si no se encuentra el turista, retornar None
-
-        nombre, apellido, telefono, nacionalidad, email = turista
-
-        # Consultar en la tabla pagos, reservas, paquetes y destinos
-        cursor.execute(""" 
+        # Construir la consulta dinámica basada en el campo
+        query = f"""
             SELECT 
-                cd.destino,
-                pt.tipo_paquete,
-                p.monto_total,
-                r.f_reserva,
-                r.f_salida,
-                r.duracion_dias,
-                p.metodo
+                t.nombre, t.apellido, t.telefono, t.nacionalidad, t.email,
+                cd.destino, pt.tipo_paquete, p.monto_total,
+                r.f_reserva, r.f_salida, r.duracion_dias, p.metodo
             FROM 
-                pago p
+                turista t
+            JOIN 
+                pago p ON t.id_turista = p.id_turista
             JOIN 
                 reserva r ON p.id_reserva = r.id_reserva
             JOIN 
@@ -102,46 +86,42 @@ def obtener_reserva(numero_documento):
             JOIN 
                 catalogo_destino cd ON pt.id_cat_destino = cd.id_destino
             WHERE 
-                p.id_turista = (
-                    SELECT id_turista
-                    FROM turista
-                    WHERE num_doc = %s
-                )
-        """, (numero_documento,))
+                {campo_busqueda} LIKE %s
+        """
+        cursor.execute(query, (f"%{valor}%",))  # Usar LIKE para búsquedas parciales
 
-        destino = cursor.fetchone()
+        # Obtener todas las filas coincidentes
+        resultados = cursor.fetchall()
 
-        if destino:
-            print("Resultado de la consulta destino:", destino)  # Imprimir el resultado para verificar
+        # Si no hay resultados, retornar vacío
+        if not resultados:
+            print(f"No se encontraron reservas para el criterio: {campo_busqueda} con valor: {valor}")
+            return []
 
-            # Ahora esperamos 7 valores, así que ajustamos el unpacking
-            destino, tipo_paquete, monto_total, f_reserva, f_salida, duracion_dias, metodo = destino
+        # Procesar los resultados y devolverlos como una lista de diccionarios
+        reservas = []
+        for resultado in resultados:
+            reservas.append({
+                'nombre': resultado[0],
+                'apellido': resultado[1],
+                'telefono': resultado[2],
+                'nacionalidad': resultado[3],
+                'email': resultado[4],
+                'destino': resultado[5],
+                'tipo_paquete': resultado[6],
+                'monto_total': resultado[7],
+                'f_reserva': resultado[8],
+                'f_salida': resultado[9],
+                'duracion_dias': resultado[10],
+                'metodo': resultado[11]
+            })
 
-            # Devolver los datos en un diccionario
-            resultado = {
-                'nombre': nombre,
-                'apellido': apellido,
-                'telefono': telefono,
-                'email': email,
-                'nacionalidad': nacionalidad,
-                'destino': destino,  # Asignar el destino correctamente
-                'tipo_paquete': tipo_paquete,
-                'monto_total': monto_total,
-                'f_reserva': f_reserva,
-                'f_salida': f_salida,
-                'duracion_dias': duracion_dias,
-                'metodo': metodo
-            }
-
-            return resultado
-        else:
-            print(f"No se encontró una reserva asociada al documento: {numero_documento}")
-            return None  # Si no se encuentra la reserva
+        return reservas
 
     except Exception as e:
-        print(f"Error durante la consulta: {e}")  # Manejo de errores
-        return None  # Retornar None si ocurre un error
+        print(f"Error durante la consulta: {e}")
+        return []
 
     finally:
-        cursor.close()  # Cerrar cursor
+        cursor.close()  # Cerrar el cursor
         conn.close()  # Cerrar la conexión

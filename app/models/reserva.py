@@ -118,7 +118,3 @@ class Reserva:
         except Exception as e:
             print(f"Error durante la transacción: {e}")  # Manejar cualquier otro error
             return False
-
-    def obtener_reserva(self, num_documento):
-        """Buscar una reserva en la base de datos usando el número de documento."""
-        return obtener_reserva(num_documento)  # Utilizar la función de búsqueda en el servicio
